@@ -1,0 +1,16 @@
+services:
+  mcp-gateway:
+    image: hwdsl2/mcp-gateway
+    container_name: mcp-gateway
+    restart: always
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - mcp-data:/var/lib/mcp
+      - ./mcp.env:/mcp.env:ro
+      # Mount host directories for the filesystem MCP server (optional):
+      # - /path/to/docs:/data/docs:ro
+      # - /path/to/code:/data/code:ro
+
+volumes:
+  mcp-data:
