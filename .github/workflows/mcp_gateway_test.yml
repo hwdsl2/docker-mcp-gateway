@@ -74,12 +74,28 @@ jobs:
           http_code=$(curl -sf -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/mcp 2>/dev/null || true)
           [ "$http_code" = "401" ] || { echo "Expected 401, got $http_code"; exit 1; }
 
-          # Verify MCP endpoint is accessible with API key
-          http_code=$(curl -sf -o /dev/null -w '%{http_code}' \
-            -H "Authorization: Bearer $MCP_KEY" \
+          # Verify wrong API key is rejected (401)
+          http_code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer wrong-key" \
             http://127.0.0.1:3000/mcp 2>/dev/null || true)
-          [ "$http_code" = "200" ] || [ "$http_code" = "405" ] \
-            || { echo "Expected 200 or 405, got $http_code"; exit 1; }
+          [ "$http_code" = "401" ] || { echo "Expected 401 for wrong key, got $http_code"; exit 1; }
+
+          # Verify MCP endpoint is accessible with API key (MCP initialize request)
+          http_code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer $MCP_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' \
+            http://127.0.0.1:3000/mcp 2>/dev/null || true)
+          [ "$http_code" = "200" ] \
+            || { echo "Expected 200, got $http_code"; exit 1; }
+
+          # Verify mcp_manage --status reports both services running
+          docker exec "$TEST_ID" mcp_manage --status | grep -q "MCPHub:  running" \
+            || { echo "MCPHub not running per --status"; exit 1; }
+          docker exec "$TEST_ID" mcp_manage --status | grep -q "Caddy:   running" \
+            || { echo "Caddy not running per --status"; exit 1; }
 
           # Verify fetch server endpoint
           docker exec "$TEST_ID" mcp_manage --test fetch
@@ -107,6 +123,17 @@ jobs:
           # Verify API key persisted across restart
           MCP_KEY2=$(docker exec "$TEST_ID" mcp_manage --getkey)
           [ "$MCP_KEY" = "$MCP_KEY2" ] || { echo "API key changed after restart"; exit 1; }
+
+          # Verify MCP endpoint still works after restart
+          http_code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer $MCP_KEY2" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' \
+            http://127.0.0.1:3000/mcp 2>/dev/null || true)
+          [ "$http_code" = "200" ] \
+            || { echo "Expected 200 after restart, got $http_code"; exit 1; }
 
           exit 0
       - name: Clear
