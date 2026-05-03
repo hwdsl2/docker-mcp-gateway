@@ -348,7 +348,9 @@ cat > "$CADDY_CONFIG_FILE" << CADDYEOF
     not path /health
   }
   respond @unauthed "Unauthorized" 401
-  reverse_proxy 127.0.0.1:${MCP_INTERNAL_PORT}
+  reverse_proxy 127.0.0.1:${MCP_INTERNAL_PORT} {
+    header_up -X-Forwarded-For
+  }
 }
 CADDYEOF
 caddy fmt --overwrite "$CADDY_CONFIG_FILE" 2>/dev/null || true
