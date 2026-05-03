@@ -24,7 +24,7 @@
 
 **另提供：**
 
-- AI/音訊：[Whisper (STT)](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh-Hant.md)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh-Hant.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh-Hant.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh-Hant.md)、[Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh-Hant.md)
+- AI/音訊：[Whisper (STT)](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh-Hant.md)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh-Hant.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh-Hant.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh-Hant.md)、[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh-Hant.md)
 - VPN：[WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-zh-Hant.md)、[OpenVPN](https://github.com/hwdsl2/docker-openvpn/blob/main/README-zh-Hant.md)、[IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh-Hant.md)、[Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-zh-Hant.md)
 
 **提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro 和 Embeddings 可以[協同使用](#與其他-ai-服務配合使用)，在您自己的伺服器上建置完整的私有 AI 技術堆疊——包含工具存取、本地 LLM、語音輸入/輸出和語意搜尋。
@@ -95,6 +95,13 @@ curl http://localhost:3000/health
 
 ```bash
 docker pull hwdsl2/mcp-gateway
+```
+
+也可從 [Quay.io](https://quay.io/repository/hwdsl2/mcp-gateway) 下載：
+
+```bash
+docker pull quay.io/hwdsl2/mcp-gateway
+docker image tag quay.io/hwdsl2/mcp-gateway hwdsl2/mcp-gateway
 ```
 
 支援平台：`linux/amd64` 和 `linux/arm64`。
@@ -220,6 +227,16 @@ docker exec mcp-gateway mcp_manage --showkey
 MCP_KEY=$(docker exec mcp-gateway mcp_manage --getkey)
 ```
 
+**在執行時新增或移除伺服器：**
+
+使用 MCPHub 儀表板（`http://<伺服器>:3000/`）在不重新啟動容器的情況下新增、設定或移除 MCP 伺服器。變更將儲存至持久卷並在重新啟動後保留。
+
+> **注意：** `MCP_SERVERS` 僅在**首次執行**建立 `mcp_settings.json` 時生效。此後，儀表板是管理伺服器的方式。若要重新套用 `MCP_SERVERS`，請刪除設定檔並重新啟動：
+> ```bash
+> docker exec mcp-gateway rm /var/lib/mcp/mcp_settings.json
+> docker restart mcp-gateway
+> ```
+
 ## 使用 API
 
 所有 API 請求均需 Bearer Token。首先取得 API 金鑰：
@@ -301,6 +318,8 @@ curl http://localhost:3000/health
 └── .Caddyfile          # 產生的 Caddy 設定（驗證代理）
 ```
 
+`mcp_settings.json` 僅在首次執行時根據 `MCP_SERVERS` 產生。後續重新啟動將重複使用現有檔案，保留透過儀表板所做的任何變更。
+
 備份 Docker 卷以保留您的設定和 API 金鑰。
 
 ## 使用 docker-compose
@@ -380,10 +399,21 @@ server {
 
 ## 更新 Docker 映像
 
-要更新 Docker 映像和容器：
+要更新 Docker 映像和容器，請先[下載](#下載)最新版本：
 
 ```bash
 docker pull hwdsl2/mcp-gateway
+```
+
+如果 Docker 映像已是最新版本，您將看到：
+
+```
+Status: Image is up to date for hwdsl2/mcp-gateway:latest
+```
+
+否則，將下載最新版本。刪除並重新建立容器：
+
+```bash
 docker rm -f mcp-gateway
 # 然後使用相同的卷重新執行快速開始中的 docker run 指令。
 ```
@@ -392,7 +422,7 @@ docker rm -f mcp-gateway
 
 ## 與其他 AI 服務配合使用
 
-[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)、[Ollama](https://github.com/hwdsl2/docker-ollama)、[LiteLLM](https://github.com/hwdsl2/docker-litellm)、[Whisper (STT)](https://github.com/hwdsl2/docker-whisper)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro) 和 [Embeddings](https://github.com/hwdsl2/docker-embeddings) 映像可以組合在一起，在您自己的伺服器上建置完整的私有 AI 技術堆疊。MCP Gateway 為支援 MCP 的任何 LLM 客戶端提供工具（檔案存取、網頁搜尋、GitHub、資料庫）。Ollama 在本地執行所有 LLM 推論，無需向第三方傳送資料。使用 LiteLLM 接入外部提供商（如 OpenAI、Anthropic）時，您的資料將傳送給這些提供商。
+[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)、[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)、[LiteLLM](https://github.com/hwdsl2/docker-litellm)、[Whisper (STT)](https://github.com/hwdsl2/docker-whisper)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro) 和 [Embeddings](https://github.com/hwdsl2/docker-embeddings) 映像可以組合使用，在您自己的伺服器上建置完整的私有 AI 技術堆疊——從語音輸入/輸出到 RAG 問答。MCP Gateway 為支援 MCP 的任何 LLM 客戶端提供工具（檔案存取、網頁搜尋、GitHub、資料庫）。Whisper、Kokoro 和 Embeddings 完全在本地執行。Ollama 在本地執行所有 LLM 推論，無需向第三方傳送資料。使用 LiteLLM 接入外部提供商（如 OpenAI、Anthropic）時，您的資料將傳送給這些提供商。
 
 ```mermaid
 graph LR
@@ -405,14 +435,29 @@ graph LR
     L -->|MCP 工具| G
 ```
 
+```mermaid
+graph LR
+    D["📄 文件"] -->|embed| E["Embeddings<br/>（文字 → 向量）"]
+    E -->|儲存| VDB["向量資料庫<br/>（Qdrant、Chroma）"]
+    A["🎤 音訊輸入"] -->|轉錄| W["Whisper<br/>（語音轉文字）"]
+    W -->|查詢| E
+    VDB -->|上下文| L["LiteLLM<br/>（AI 閘道）"]
+    W -->|文字| L
+    L -->|路由到| O["Ollama<br/>（本地 LLM）"]
+    L -->|回應| T["Kokoro TTS<br/>（文字轉語音）"]
+    T --> B["🔊 音訊輸出"]
+    L -->|MCP 協定| M["MCP Gateway<br/>（MCP 端點）"]
+    M --> C["🤖 AI 助手<br/>（Claude、Cursor 等）"]
+```
+
 | 服務 | 作用 | 預設連接埠 |
 |---|---|---|
-| **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | 為 AI 客戶端提供 MCP 工具（檔案系統、fetch、GitHub、搜尋、資料庫） | `3000` |
-| **[Ollama](https://github.com/hwdsl2/docker-ollama)** | 執行本地 LLM 模型（llama3、qwen、mistral 等） | `11434` |
+| **[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)** | 執行本地 LLM 模型（llama3、qwen、mistral 等） | `11434` |
 | **[LiteLLM](https://github.com/hwdsl2/docker-litellm)** | AI 閘道 — 將請求路由到 Ollama、OpenAI、Anthropic 等 100+ 提供商 | `4000` |
 | **[Embeddings](https://github.com/hwdsl2/docker-embeddings)** | 將文字轉換為向量，用於語意搜尋和 RAG | `8000` |
 | **[Whisper（語音轉文字）](https://github.com/hwdsl2/docker-whisper)** | 將語音音訊轉錄為文字 | `9000` |
 | **[Kokoro（文字轉語音）](https://github.com/hwdsl2/docker-kokoro)** | 將文字轉換為自然語音 | `8880` |
+| **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | 為 AI 客戶端提供 MCP 工具（檔案系統、fetch、GitHub、搜尋、資料庫） | `3000` |
 
 **將 MCP Gateway 連接到 LiteLLM：**
 
@@ -426,29 +471,106 @@ mcp_servers:
 ```
 
 <details>
+<summary><strong>MCP 工具使用範例</strong></summary>
+
+使用 MCP Gateway 為您的 AI 助手提供對檔案、網頁和 GitHub 的存取權限：
+
+```bash
+MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+
+# 使用 MCP 端點連接 AI 客戶端（如 VS Code 中的 Cline）
+# 設定 MCP 伺服器 URL：http://localhost:3000/mcp
+# 設定 Authorization 標頭：Bearer <api_key>
+
+# 或直接測試 MCP 端點
+curl -s http://localhost:3000/mcp \
+    -X POST \
+    -H "Authorization: Bearer $MCP_KEY" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+```
+
+</details>
+
+<details>
+<summary><strong>語音管道範例</strong></summary>
+
+轉錄語音問題，透過 Ollama 取得本地 LLM 回應，然後轉換為語音：
+
+```bash
+LITELLM_KEY=$(docker exec litellm litellm_manage --getkey)
+
+# 第一步：將音訊轉錄為文字（Whisper）
+TEXT=$(curl -s http://localhost:9000/v1/audio/transcriptions \
+    -F file=@question.mp3 -F model=whisper-1 | jq -r .text)
+
+# 第二步：透過 LiteLLM 將文字傳送給 Ollama 並取得回應
+RESPONSE=$(curl -s http://localhost:4000/v1/chat/completions \
+    -H "Authorization: Bearer $LITELLM_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"ollama/llama3.2:3b\",\"messages\":[{\"role\":\"user\",\"content\":\"$TEXT\"}]}" \
+    | jq -r '.choices[0].message.content')
+
+# 第三步：將回應轉換為語音（Kokoro TTS）
+curl -s http://localhost:8880/v1/audio/speech \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"tts-1\",\"input\":\"$RESPONSE\",\"voice\":\"af_heart\"}" \
+    --output response.mp3
+```
+
+</details>
+
+<details>
+<summary><strong>RAG 管道範例</strong></summary>
+
+將文件嵌入以進行語意搜尋，擷取上下文，然後使用本地 Ollama 模型回答問題：
+
+```bash
+LITELLM_KEY=$(docker exec litellm litellm_manage --getkey)
+
+# 第一步：嵌入文件片段並將向量儲存到向量資料庫
+curl -s http://localhost:8000/v1/embeddings \
+    -H "Content-Type: application/json" \
+    -d '{"input": "Docker 透過將應用程式封裝在容器中來簡化部署。", "model": "text-embedding-ada-002"}' \
+    | jq '.data[0].embedding'
+# → 將回傳的向量與來源文字一起儲存在 Qdrant、Chroma、pgvector 等中。
+
+# 第二步：查詢時，嵌入問題，從向量資料庫擷取最匹配的片段，
+#          然後將問題和擷取到的上下文透過 LiteLLM 傳送給 Ollama。
+curl -s http://localhost:4000/v1/chat/completions \
+    -H "Authorization: Bearer $LITELLM_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "ollama/llama3.2:3b",
+      "messages": [
+        {"role": "system", "content": "僅使用提供的上下文回答。"},
+        {"role": "user", "content": "Docker 是什麼？\n\n上下文：Docker 透過將應用程式封裝在容器中來簡化部署。"}
+      ]
+    }' \
+    | jq -r '.choices[0].message.content'
+```
+
+</details>
+
+<details>
 <summary><strong>完整技術堆疊 docker-compose 範例</strong></summary>
 
-使用一條指令部署 MCP Gateway、Ollama 和 LiteLLM。在 `litellm.env` 中設定 `LITELLM_OLLAMA_BASE_URL=http://ollama:11434`。
+使用一條指令部署所有服務。無需任何設定——所有服務在首次啟動時自動進行安全設定。
+
+**資源需求：** 同時執行所有服務至少需要 8 GB 記憶體（使用小型模型）。對於較大的 LLM 模型（8B+），建議 32 GB 或更多。您可以將不需要的服務加上注解以減少記憶體使用。
 
 ```yaml
 services:
-  mcp-gateway:
-    image: hwdsl2/mcp-gateway
-    container_name: mcp-gateway
-    restart: always
-    ports:
-      - "3000:3000/tcp"
-    volumes:
-      - mcp-data:/var/lib/mcp
-      - ./mcp.env:/mcp.env:ro
-
   ollama:
     image: hwdsl2/ollama-server
     container_name: ollama
     restart: always
+    # ports:
+    #   - "11434:11434/tcp"  # Uncomment for direct access to Ollama
     volumes:
       - ollama-data:/var/lib/ollama
-      - ./ollama.env:/ollama.env:ro
+      # - ./ollama.env:/ollama.env:ro  # optional: custom config
 
   litellm:
     image: hwdsl2/litellm-server
@@ -456,14 +578,71 @@ services:
     restart: always
     ports:
       - "4000:4000/tcp"
+    environment:
+      - LITELLM_OLLAMA_BASE_URL=http://ollama:11434
     volumes:
       - litellm-data:/etc/litellm
-      - ./litellm.env:/litellm.env:ro
+      # - ./litellm.env:/litellm.env:ro  # optional: custom config
+
+  embeddings:
+    image: hwdsl2/embeddings-server
+    container_name: embeddings
+    restart: always
+    ports:
+      - "8000:8000/tcp"
+    volumes:
+      - embeddings-data:/var/lib/embeddings
+      # - ./embed.env:/embed.env:ro  # optional: custom config
+
+  whisper:
+    image: hwdsl2/whisper-server
+    container_name: whisper
+    restart: always
+    ports:
+      - "9000:9000/tcp"
+    volumes:
+      - whisper-data:/var/lib/whisper
+      # - ./whisper.env:/whisper.env:ro  # optional: custom config
+
+  kokoro:
+    image: hwdsl2/kokoro-server
+    container_name: kokoro
+    restart: always
+    ports:
+      - "8880:8880/tcp"
+    volumes:
+      - kokoro-data:/var/lib/kokoro
+      # - ./kokoro.env:/kokoro.env:ro  # optional: custom config
+
+  mcp:
+    image: hwdsl2/mcp-gateway
+    container_name: mcp
+    restart: always
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - mcp-data:/var/lib/mcp
+      # - ./mcp.env:/mcp.env:ro  # optional: custom config
 
 volumes:
-  mcp-data:
   ollama-data:
   litellm-data:
+  embeddings-data:
+  whisper-data:
+  kokoro-data:
+  mcp-data:
+```
+
+若要使用 NVIDIA GPU 加速，將 ollama、whisper 和 kokoro 的映像標籤改為 `:cuda`，並為每個服務新增以下內容：
+
+```yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 ```
 
 </details>
@@ -486,7 +665,7 @@ volumes:
 版權所有 (C) 2026 Lin Song   
 本作品基於 [MIT 授權條款](https://opensource.org/licenses/MIT)授權。
 
-**MCPHub** 版權所有 (C) 2024 samanhappy，基於 [Apache 授權條款 2.0](https://github.com/samanhappy/mcphub/blob/main/LICENSE) 分發。
+**MCPHub** 版權所有 (C) 2025 samanhappy，基於 [Apache 授權條款 2.0](https://github.com/samanhappy/mcphub/blob/main/LICENSE) 分發。
 
 **Caddy** 版權所有 (C) 2015 Matthew Holt 和 Caddy 作者，基於 [Apache 授權條款 2.0](https://github.com/caddyserver/caddy/blob/master/LICENSE) 分發。
 

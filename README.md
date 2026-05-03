@@ -24,7 +24,7 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 
 **Also available:**
 
-- AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama](https://github.com/hwdsl2/docker-ollama)
+- AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)
 - VPN: [WireGuard](https://github.com/hwdsl2/docker-wireguard), [OpenVPN](https://github.com/hwdsl2/docker-openvpn), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server), [Headscale](https://github.com/hwdsl2/docker-headscale)
 
 **Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, private AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search.
@@ -95,6 +95,13 @@ Get the trusted build from the [Docker Hub registry](https://hub.docker.com/r/hw
 
 ```bash
 docker pull hwdsl2/mcp-gateway
+```
+
+Alternatively, you may download from [Quay.io](https://quay.io/repository/hwdsl2/mcp-gateway):
+
+```bash
+docker pull quay.io/hwdsl2/mcp-gateway
+docker image tag quay.io/hwdsl2/mcp-gateway hwdsl2/mcp-gateway
 ```
 
 Supported platforms: `linux/amd64` and `linux/arm64`.
@@ -220,6 +227,16 @@ docker exec mcp-gateway mcp_manage --showkey
 MCP_KEY=$(docker exec mcp-gateway mcp_manage --getkey)
 ```
 
+**Add or remove servers at runtime:**
+
+Use the MCPHub dashboard at `http://<server>:3000/` to add, configure, or remove MCP servers without restarting the container. Changes are saved to the persistent volume and survive restarts.
+
+> **Note:** `MCP_SERVERS` only applies on the **first run** when `mcp_settings.json` is created. After that, the dashboard is the way to manage servers. To re-apply `MCP_SERVERS` from scratch, remove the config file and restart:
+> ```bash
+> docker exec mcp-gateway rm /var/lib/mcp/mcp_settings.json
+> docker restart mcp-gateway
+> ```
+
 ## Using the API
 
 All API requests require a Bearer token. Retrieve the API key first:
@@ -301,6 +318,8 @@ All gateway data is stored in the Docker volume (`/var/lib/mcp` inside the conta
 └── .Caddyfile          # Generated Caddy config (auth proxy)
 ```
 
+`mcp_settings.json` is generated from `MCP_SERVERS` on first run only. Subsequent restarts reuse the existing file, preserving any changes made via the dashboard.
+
 Back up the Docker volume to preserve your configuration and API key.
 
 ## Using docker-compose
@@ -380,10 +399,21 @@ After setting up a reverse proxy, set `MCP_HOST=mcp.example.com` in your `env` f
 
 ## Update Docker image
 
-To update the Docker image and container:
+To update the Docker image and container, first [download](#download) the latest version:
 
 ```bash
 docker pull hwdsl2/mcp-gateway
+```
+
+If the Docker image is already up to date, you should see:
+
+```
+Status: Image is up to date for hwdsl2/mcp-gateway:latest
+```
+
+Otherwise, it will download the latest version. Remove and re-create the container:
+
+```bash
 docker rm -f mcp-gateway
 # Then re-run the docker run command from Quick start with the same volume.
 ```
@@ -392,7 +422,7 @@ Your configuration and API key are preserved in the `mcp-data` volume.
 
 ## Using with other AI services
 
-The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama](https://github.com/hwdsl2/docker-ollama), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), and [Embeddings](https://github.com/hwdsl2/docker-embeddings) images can be combined to build a complete, private AI stack on your own server. MCP Gateway provides tools (file access, web search, GitHub, databases) to any LLM client that supports MCP. Ollama runs all LLM inference locally, so no data is sent to third parties. When using LiteLLM with external providers (e.g., OpenAI, Anthropic), your data will be sent to those providers.
+The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), and [Embeddings](https://github.com/hwdsl2/docker-embeddings) images can be combined to build a complete, private AI stack on your own server — from voice I/O to RAG-powered question answering. MCP Gateway provides tools (file access, web search, GitHub, databases) to any LLM client that supports MCP. Whisper, Kokoro, and Embeddings run fully locally. Ollama runs all LLM inference locally, so no data is sent to third parties. When using LiteLLM with external providers (e.g., OpenAI, Anthropic), your data will be sent to those providers.
 
 ```mermaid
 graph LR
@@ -405,14 +435,29 @@ graph LR
     L -->|MCP tools| G
 ```
 
+```mermaid
+graph LR
+    D["📄 Documents"] -->|embed| E["Embeddings<br/>(text → vectors)"]
+    E -->|store| VDB["Vector DB<br/>(Qdrant, Chroma)"]
+    A["🎤 Audio input"] -->|transcribe| W["Whisper<br/>(speech-to-text)"]
+    W -->|query| E
+    VDB -->|context| L["LiteLLM<br/>(AI gateway)"]
+    W -->|text| L
+    L -->|routes to| O["Ollama<br/>(local LLM)"]
+    L -->|response| T["Kokoro TTS<br/>(text-to-speech)"]
+    T --> B["🔊 Audio output"]
+    L -->|MCP protocol| M["MCP Gateway<br/>(MCP endpoint)"]
+    M --> C["🤖 AI assistant<br/>(Claude, Cursor, etc.)"]
+```
+
 | Service | Role | Default port |
 |---|---|---|
-| **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | Provides MCP tools (filesystem, fetch, GitHub, search, databases) to AI clients | `3000` |
-| **[Ollama](https://github.com/hwdsl2/docker-ollama)** | Runs local LLM models (llama3, qwen, mistral, etc.) | `11434` |
+| **[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)** | Runs local LLM models (llama3, qwen, mistral, etc.) | `11434` |
 | **[LiteLLM](https://github.com/hwdsl2/docker-litellm)** | AI gateway — routes requests to Ollama, OpenAI, Anthropic, and 100+ providers | `4000` |
 | **[Embeddings](https://github.com/hwdsl2/docker-embeddings)** | Converts text to vectors for semantic search and RAG | `8000` |
 | **[Whisper (STT)](https://github.com/hwdsl2/docker-whisper)** | Transcribes spoken audio to text | `9000` |
 | **[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro)** | Converts text to natural-sounding speech | `8880` |
+| **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | Provides MCP tools (filesystem, fetch, GitHub, search, databases) to AI clients | `3000` |
 
 **Connect MCP Gateway to LiteLLM:**
 
@@ -426,29 +471,106 @@ mcp_servers:
 ```
 
 <details>
+<summary><strong>MCP tools example</strong></summary>
+
+Use MCP Gateway to give your AI assistant access to files, web, and GitHub:
+
+```bash
+MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+
+# Use MCP endpoint with an AI client (e.g., Cline in VS Code)
+# Set the MCP server URL: http://localhost:3000/mcp
+# Set Authorization header: Bearer <api_key>
+
+# Or test the MCP endpoint directly with an initialize request
+curl -s http://localhost:3000/mcp \
+    -X POST \
+    -H "Authorization: Bearer $MCP_KEY" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+```
+
+</details>
+
+<details>
+<summary><strong>Voice pipeline example</strong></summary>
+
+Transcribe a spoken question, get a local LLM response via Ollama, and convert it to speech:
+
+```bash
+LITELLM_KEY=$(docker exec litellm litellm_manage --getkey)
+
+# Step 1: Transcribe audio to text (Whisper)
+TEXT=$(curl -s http://localhost:9000/v1/audio/transcriptions \
+    -F file=@question.mp3 -F model=whisper-1 | jq -r .text)
+
+# Step 2: Send text to Ollama via LiteLLM and get a response
+RESPONSE=$(curl -s http://localhost:4000/v1/chat/completions \
+    -H "Authorization: Bearer $LITELLM_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"ollama/llama3.2:3b\",\"messages\":[{\"role\":\"user\",\"content\":\"$TEXT\"}]}" \
+    | jq -r '.choices[0].message.content')
+
+# Step 3: Convert the response to speech (Kokoro TTS)
+curl -s http://localhost:8880/v1/audio/speech \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"tts-1\",\"input\":\"$RESPONSE\",\"voice\":\"af_heart\"}" \
+    --output response.mp3
+```
+
+</details>
+
+<details>
+<summary><strong>RAG pipeline example</strong></summary>
+
+Embed documents for semantic search, retrieve context, then answer questions with a local Ollama model:
+
+```bash
+LITELLM_KEY=$(docker exec litellm litellm_manage --getkey)
+
+# Step 1: Embed a document chunk and store the vector in your vector DB
+curl -s http://localhost:8000/v1/embeddings \
+    -H "Content-Type: application/json" \
+    -d '{"input": "Docker simplifies deployment by packaging apps in containers.", "model": "text-embedding-ada-002"}' \
+    | jq '.data[0].embedding'
+# → Store the returned vector alongside the source text in Qdrant, Chroma, pgvector, etc.
+
+# Step 2: At query time, embed the question, retrieve the top matching chunks from
+#          the vector DB, then send the question and retrieved context to Ollama via LiteLLM.
+curl -s http://localhost:4000/v1/chat/completions \
+    -H "Authorization: Bearer $LITELLM_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "ollama/llama3.2:3b",
+      "messages": [
+        {"role": "system", "content": "Answer using only the provided context."},
+        {"role": "user", "content": "What does Docker do?\n\nContext: Docker simplifies deployment by packaging apps in containers."}
+      ]
+    }' \
+    | jq -r '.choices[0].message.content'
+```
+
+</details>
+
+<details>
 <summary><strong>Full stack docker-compose example</strong></summary>
 
-Deploy MCP Gateway alongside Ollama and LiteLLM with a single command. Set `LITELLM_OLLAMA_BASE_URL=http://ollama:11434` in `litellm.env`.
+Deploy all services with a single command. No setup required — all services auto-configure with secure defaults on first start.
+
+**Resource requirements:** Running all services together requires at least 8 GB of RAM (with small models). For larger LLM models (8B+), 32 GB or more is recommended. You can comment out services you don't need to reduce memory usage.
 
 ```yaml
 services:
-  mcp-gateway:
-    image: hwdsl2/mcp-gateway
-    container_name: mcp-gateway
-    restart: always
-    ports:
-      - "3000:3000/tcp"
-    volumes:
-      - mcp-data:/var/lib/mcp
-      - ./mcp.env:/mcp.env:ro
-
   ollama:
     image: hwdsl2/ollama-server
     container_name: ollama
     restart: always
+    # ports:
+    #   - "11434:11434/tcp"  # Uncomment for direct access to Ollama
     volumes:
       - ollama-data:/var/lib/ollama
-      - ./ollama.env:/ollama.env:ro
+      # - ./ollama.env:/ollama.env:ro  # optional: custom config
 
   litellm:
     image: hwdsl2/litellm-server
@@ -456,14 +578,71 @@ services:
     restart: always
     ports:
       - "4000:4000/tcp"
+    environment:
+      - LITELLM_OLLAMA_BASE_URL=http://ollama:11434
     volumes:
       - litellm-data:/etc/litellm
-      - ./litellm.env:/litellm.env:ro
+      # - ./litellm.env:/litellm.env:ro  # optional: custom config
+
+  embeddings:
+    image: hwdsl2/embeddings-server
+    container_name: embeddings
+    restart: always
+    ports:
+      - "8000:8000/tcp"
+    volumes:
+      - embeddings-data:/var/lib/embeddings
+      # - ./embed.env:/embed.env:ro  # optional: custom config
+
+  whisper:
+    image: hwdsl2/whisper-server
+    container_name: whisper
+    restart: always
+    ports:
+      - "9000:9000/tcp"
+    volumes:
+      - whisper-data:/var/lib/whisper
+      # - ./whisper.env:/whisper.env:ro  # optional: custom config
+
+  kokoro:
+    image: hwdsl2/kokoro-server
+    container_name: kokoro
+    restart: always
+    ports:
+      - "8880:8880/tcp"
+    volumes:
+      - kokoro-data:/var/lib/kokoro
+      # - ./kokoro.env:/kokoro.env:ro  # optional: custom config
+
+  mcp:
+    image: hwdsl2/mcp-gateway
+    container_name: mcp
+    restart: always
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - mcp-data:/var/lib/mcp
+      # - ./mcp.env:/mcp.env:ro  # optional: custom config
 
 volumes:
-  mcp-data:
   ollama-data:
   litellm-data:
+  embeddings-data:
+  whisper-data:
+  kokoro-data:
+  mcp-data:
+```
+
+For NVIDIA GPU acceleration, change image tags to `:cuda` for ollama, whisper, and kokoro, and add the following to each of those services:
+
+```yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 ```
 
 </details>
@@ -486,7 +665,7 @@ volumes:
 Copyright (C) 2026 Lin Song   
 This work is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
-**MCPHub** is Copyright (C) 2024 samanhappy, and is distributed under the [Apache License 2.0](https://github.com/samanhappy/mcphub/blob/main/LICENSE).
+**MCPHub** is Copyright (C) 2025 samanhappy, and is distributed under the [Apache License 2.0](https://github.com/samanhappy/mcphub/blob/main/LICENSE).
 
 **Caddy** is Copyright (C) 2015 Matthew Holt and The Caddy Authors, and is distributed under the [Apache License 2.0](https://github.com/caddyserver/caddy/blob/master/LICENSE).
 
