@@ -100,6 +100,11 @@ jobs:
           # Verify fetch server endpoint
           docker exec "$TEST_ID" mcp_manage --test fetch
 
+          # Verify memory server endpoint (only enabled when MCP_SERVERS includes 'memory')
+          if docker exec "$TEST_ID" mcp_manage --list | grep -q 'memory'; then
+            docker exec "$TEST_ID" mcp_manage --test memory
+          fi
+
           docker restart "$TEST_ID"
 
           sleep 10
