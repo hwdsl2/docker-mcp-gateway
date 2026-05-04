@@ -48,7 +48,7 @@ docker run \
 
 При первом запуске автоматически генерируется API-ключ, который отображается в логах контейнера. Все API-запросы требуют этот ключ.
 
-**Примечание:** Для развёртывания с HTTPS см. раздел [Использование обратного прокси](#использование-обратного-прокси).
+**Примечание:** Для развёртывания с доступом из интернета настоятельно **рекомендуется** использовать [обратный прокси](#использование-обратного-прокси) для добавления HTTPS. В этом случае также замените `-p 3000:3000/tcp` на `-p 127.0.0.1:3000:3000/tcp` в команде `docker run` выше, чтобы предотвратить прямой доступ к незашифрованному порту.
 
 **Шаг 2.** Получите API-ключ:
 
@@ -352,16 +352,20 @@ volumes:
   mcp-data:
 ```
 
+**Примечание:** Для развёртывания с доступом из интернета настоятельно **рекомендуется** использовать [обратный прокси](#использование-обратного-прокси) для добавления HTTPS. В этом случае также замените `"3000:3000/tcp"` на `"127.0.0.1:3000:3000/tcp"` в файле `docker-compose.yml`, чтобы предотвратить прямой доступ к незашифрованному порту.
+
 ## Использование обратного прокси
 
-Для развёртывания с доступом из интернета установите обратный прокси для обработки HTTPS. Встроенный прокси аутентификации Caddy обеспечивает аутентификацию; внешний обратный прокси добавляет TLS. Используйте один из следующих адресов для доступа к контейнеру MCP Gateway:
+Для развёртывания с выходом в интернет разместите обратный прокси перед MCP Gateway для обработки HTTPS-терминации. Сервер работает без HTTPS в локальной или доверенной сети, но HTTPS рекомендуется при открытом доступе к API-эндпоинту из интернета.
 
-- **`mcp-gateway:3000`** — если обратный прокси работает как контейнер в той же Docker-сети
-- **`127.0.0.1:3000`** — если обратный прокси работает на хосте и порт опубликован
+Используйте один из следующих адресов для доступа к контейнеру MCP Gateway из обратного прокси:
+
+- **`mcp-gateway:3000`** — если ваш обратный прокси работает как контейнер в **той же Docker-сети**, что и MCP Gateway (например, определён в том же `docker-compose.yml`).
+- **`127.0.0.1:3000`** — если ваш обратный прокси работает **на хосте** и порт `3000` опубликован (по умолчанию `docker-compose.yml` публикует его).
 
 **Примечание:** Заголовок `Authorization: Bearer` автоматически передаётся через обратные прокси — специальная настройка не требуется.
 
-**Пример с [Caddy](https://caddyserver.com/docs/) (автоматический TLS через Let's Encrypt):**
+**Пример с [Caddy](https://caddyserver.com/docs/) ([Docker-образ](https://hub.docker.com/_/caddy))** (автоматический TLS через Let's Encrypt, обратный прокси в той же Docker-сети):
 
 `Caddyfile`:
 ```
@@ -370,28 +374,28 @@ mcp.example.com {
 }
 ```
 
-**Пример с nginx (обратный прокси на хосте):**
+**Пример с nginx** (обратный прокси на хосте):
 
 ```nginx
 server {
-  listen 443 ssl;
-  server_name mcp.example.com;
+    listen 443 ssl;
+    server_name mcp.example.com;
 
-  ssl_certificate     /path/to/cert.pem;
-  ssl_certificate_key /path/to/key.pem;
+    ssl_certificate     /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
 
-  location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 300s;
-    proxy_buffering off;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-  }
+    location / {
+        proxy_pass         http://127.0.0.1:3000;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;       # требуется для SSE и WebSocket
+        proxy_read_timeout 300s;
+        proxy_buffering    off;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+    }
 }
 ```
 
@@ -476,7 +480,7 @@ mcp_servers:
 Используйте MCP Gateway для предоставления AI-ассистенту доступа к файлам, вебу и GitHub:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+MCP_KEY=$(docker exec mcp-gateway mcp_manage --getkey)
 
 # Используйте MCP-эндпоинт с AI-клиентом (например, Cline в VS Code)
 # Установите URL MCP-сервера: http://localhost:3000/mcp

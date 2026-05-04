@@ -48,7 +48,7 @@ docker run \
 
 On first start, an API key is auto-generated and displayed in the container logs. All API requests require this key.
 
-**Note:** For internet-facing deployments with HTTPS, see [Using a reverse proxy](#using-a-reverse-proxy).
+**Note:** For internet-facing deployments, using a [reverse proxy](#using-a-reverse-proxy) to add HTTPS is **strongly recommended**. In that case, also replace `-p 3000:3000/tcp` with `-p 127.0.0.1:3000:3000/tcp` in the `docker run` command above, to prevent direct access to the unencrypted port.
 
 **Step 2.** Get the API key:
 
@@ -352,16 +352,20 @@ volumes:
   mcp-data:
 ```
 
+**Note:** For internet-facing deployments, using a [reverse proxy](#using-a-reverse-proxy) to add HTTPS is **strongly recommended**. In that case, also change `"3000:3000/tcp"` to `"127.0.0.1:3000:3000/tcp"` in `docker-compose.yml`, to prevent direct access to the unencrypted port.
+
 ## Using a reverse proxy
 
-For internet-facing deployments, put a reverse proxy in front to handle HTTPS. The built-in Caddy auth proxy handles authentication; the external reverse proxy adds TLS. Use one of the following addresses to reach the MCP Gateway container:
+For internet-facing deployments, place a reverse proxy in front of MCP Gateway to handle HTTPS termination. The server works without HTTPS on a local or trusted network, but HTTPS is recommended when the API endpoint is exposed to the internet.
 
-- **`mcp-gateway:3000`** — if your reverse proxy runs as a container in the same Docker network.
-- **`127.0.0.1:3000`** — if your reverse proxy runs on the host and the port is published.
+Use one of the following addresses to reach the MCP Gateway container from your reverse proxy:
+
+- **`mcp-gateway:3000`** — if your reverse proxy runs as a container in the **same Docker network** as MCP Gateway (e.g. defined in the same `docker-compose.yml`).
+- **`127.0.0.1:3000`** — if your reverse proxy runs **on the host** and port `3000` is published (the default `docker-compose.yml` publishes it).
 
 **Note:** The `Authorization: Bearer` header passes through reverse proxies automatically — no special configuration needed.
 
-**Example with [Caddy](https://caddyserver.com/docs/) (automatic TLS via Let's Encrypt):**
+**Example with [Caddy](https://caddyserver.com/docs/) ([Docker image](https://hub.docker.com/_/caddy))** (automatic TLS via Let's Encrypt, reverse proxy in the same Docker network):
 
 `Caddyfile`:
 ```
@@ -370,28 +374,28 @@ mcp.example.com {
 }
 ```
 
-**Example with nginx (reverse proxy on the host):**
+**Example with nginx** (reverse proxy on the host):
 
 ```nginx
 server {
-  listen 443 ssl;
-  server_name mcp.example.com;
+    listen 443 ssl;
+    server_name mcp.example.com;
 
-  ssl_certificate     /path/to/cert.pem;
-  ssl_certificate_key /path/to/key.pem;
+    ssl_certificate     /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
 
-  location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 300s;
-    proxy_buffering off;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-  }
+    location / {
+        proxy_pass         http://127.0.0.1:3000;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;       # required for SSE and WebSocket
+        proxy_read_timeout 300s;
+        proxy_buffering    off;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+    }
 }
 ```
 
@@ -476,7 +480,7 @@ mcp_servers:
 Use MCP Gateway to give your AI assistant access to files, web, and GitHub:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+MCP_KEY=$(docker exec mcp-gateway mcp_manage --getkey)
 
 # Use MCP endpoint with an AI client (e.g., Cline in VS Code)
 # Set the MCP server URL: http://localhost:3000/mcp

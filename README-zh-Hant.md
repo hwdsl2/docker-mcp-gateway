@@ -48,7 +48,7 @@ docker run \
 
 首次啟動時，系統會自動產生 API 金鑰並顯示在容器日誌中。所有 API 請求均需此金鑰。
 
-**注意：** 對於需要 HTTPS 的面向網際網路部署，請參閱[使用反向代理](#使用反向代理)。
+**注意：** 對於面向網際網路的部署，**強烈建議**使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker run` 命令中的 `-p 3000:3000/tcp` 替換為 `-p 127.0.0.1:3000:3000/tcp`，以防止直接存取未加密的連接埠。
 
 **第二步。** 取得 API 金鑰：
 
@@ -352,16 +352,20 @@ volumes:
   mcp-data:
 ```
 
+**注意：** 對於面向網際網路的部署，**強烈建議**使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker-compose.yml` 中的 `"3000:3000/tcp"` 改為 `"127.0.0.1:3000:3000/tcp"`，以防止直接存取未加密的連接埠。
+
 ## 使用反向代理
 
-對於面向網際網路的部署，在前面放置反向代理來處理 HTTPS。內建的 Caddy 驗證代理處理驗證；外部反向代理新增 TLS。使用以下位址之一存取 MCP Gateway 容器：
+如需面向公網部署，可在 MCP Gateway 前置反向代理處理 HTTPS 終止。在本地或可信網路中使用無需 HTTPS，但將 API 端點暴露在公網時建議啟用 HTTPS。
 
-- **`mcp-gateway:3000`** — 如果反向代理作為容器在同一 Docker 網路中執行
-- **`127.0.0.1:3000`** — 如果反向代理在主機上執行且連接埠已發布
+從反向代理存取 MCP Gateway 容器時使用以下位址之一：
+
+- **`mcp-gateway:3000`** — 如果反向代理作為容器執行在與 MCP Gateway **同一 Docker 網路**中（例如定義在同一 `docker-compose.yml` 中）。
+- **`127.0.0.1:3000`** — 如果反向代理執行在**主機上**且連接埠 `3000` 已發布（預設 `docker-compose.yml` 會發布該連接埠）。
 
 **注意：** `Authorization: Bearer` 標頭會自動通過反向代理傳遞，無需特殊設定。
 
-**使用 [Caddy](https://caddyserver.com/docs/) 的範例（透過 Let's Encrypt 自動 TLS）：**
+**使用 [Caddy](https://caddyserver.com/docs/)（[Docker 映像檔](https://hub.docker.com/_/caddy)）的範例**（自動 Let's Encrypt TLS，反向代理在同一 Docker 網路中）：
 
 `Caddyfile`：
 ```
@@ -370,28 +374,28 @@ mcp.example.com {
 }
 ```
 
-**使用 nginx 的範例（主機上的反向代理）：**
+**使用 nginx 的範例**（反向代理執行在主機上）：
 
 ```nginx
 server {
-  listen 443 ssl;
-  server_name mcp.example.com;
+    listen 443 ssl;
+    server_name mcp.example.com;
 
-  ssl_certificate     /path/to/cert.pem;
-  ssl_certificate_key /path/to/key.pem;
+    ssl_certificate     /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
 
-  location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 300s;
-    proxy_buffering off;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-  }
+    location / {
+        proxy_pass         http://127.0.0.1:3000;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;       # SSE 和 WebSocket 所需
+        proxy_read_timeout 300s;
+        proxy_buffering    off;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+    }
 }
 ```
 
@@ -476,7 +480,7 @@ mcp_servers:
 使用 MCP Gateway 為您的 AI 助手提供對檔案、網頁和 GitHub 的存取權限：
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+MCP_KEY=$(docker exec mcp-gateway mcp_manage --getkey)
 
 # 使用 MCP 端點連接 AI 客戶端（如 VS Code 中的 Cline）
 # 設定 MCP 伺服器 URL：http://localhost:3000/mcp
