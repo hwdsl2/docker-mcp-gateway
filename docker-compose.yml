@@ -1,7 +1,7 @@
 services:
-  mcp-gateway:
+  mcp:
     image: hwdsl2/mcp-gateway
-    container_name: mcp-gateway
+    container_name: mcp
     restart: always
     ports:
       - "3000:3000/tcp"

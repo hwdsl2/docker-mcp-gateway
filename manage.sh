@@ -39,11 +39,11 @@ Options:
   -h, --help             show this help message and exit
 
 Examples:
-  docker exec mcp-gateway mcp_manage --list
-  docker exec mcp-gateway mcp_manage --test fetch
-  docker exec mcp-gateway mcp_manage --status
-  docker exec mcp-gateway mcp_manage --showkey
-  docker exec mcp-gateway mcp_manage --getkey
+  docker exec mcp mcp_manage --list
+  docker exec mcp mcp_manage --test fetch
+  docker exec mcp mcp_manage --status
+  docker exec mcp mcp_manage --showkey
+  docker exec mcp mcp_manage --getkey
 
 EOF
   exit "$exit_code"
