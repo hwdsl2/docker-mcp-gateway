@@ -8,7 +8,7 @@ jobs:
     if: github.repository_owner == 'hwdsl2'
     strategy:
       matrix:
-        test_id: [no-env, with-env]
+        test_id: [no-env, with-env, with-shared-vol]
       fail-fast: false
     env:
       TEST_ID: ${{ matrix.test_id }}
@@ -41,6 +41,14 @@ jobs:
               --name "$TEST_ID" \
               --restart=always \
               -v mcp-gateway-test-data:/var/lib/mcp \
+              -p 3000:3000/tcp \
+              -d mcp-gateway-test
+          elif [ "$TEST_ID" = "with-shared-vol" ]; then
+            docker run \
+              --name "$TEST_ID" \
+              --restart=always \
+              -v mcp-gateway-test-data:/var/lib/mcp \
+              -v mcp-gateway-test-shared:/var/lib/mcp-shared \
               -p 3000:3000/tcp \
               -d mcp-gateway-test
           fi
@@ -140,10 +148,18 @@ jobs:
           [ "$http_code" = "200" ] \
             || { echo "Expected 200 after restart, got $http_code"; exit 1; }
 
+          # Shared volume test: verify key was copied to shared volume
+          if [ "$TEST_ID" = "with-shared-vol" ]; then
+            SHARED_KEY=$(docker exec "$TEST_ID" cat /var/lib/mcp-shared/.api_key 2>/dev/null || true)
+            [ "$MCP_KEY" = "$SHARED_KEY" ] \
+              || { echo "API key not copied to shared volume (expected '$MCP_KEY', got '$SHARED_KEY')"; exit 1; }
+          fi
+
           exit 0
       - name: Clear
         if: always()
         run: |
           docker rm -f "$TEST_ID" || true
           docker volume rm mcp-gateway-test-data || true
+          docker volume rm mcp-gateway-test-shared || true
           docker rmi mcp-gateway-test || true
