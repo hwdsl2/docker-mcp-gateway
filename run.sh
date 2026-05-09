@@ -368,6 +368,12 @@ if ! kill -0 "$CADDY_PID" 2>/dev/null; then
   exiterr "Caddy auth proxy failed to start."
 fi
 
+# Copy API key to shared volume if mounted (used by docker-ai-stack)
+if grep -q " /var/lib/mcp-shared " /proc/mounts 2>/dev/null; then
+  cp "$API_KEY_FILE" /var/lib/mcp-shared/.api_key
+  chmod 600 /var/lib/mcp-shared/.api_key
+fi
+
 # Display connection info
 echo
 echo "==========================================================="
