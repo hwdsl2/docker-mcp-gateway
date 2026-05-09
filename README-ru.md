@@ -340,7 +340,7 @@ services:
     container_name: mcp
     restart: always
     ports:
-      - "3000:3000/tcp"
+      - "3000:3000/tcp"  # For a host-based reverse proxy, change to "127.0.0.1:3000:3000/tcp"
     volumes:
       - mcp-data:/var/lib/mcp
       - ./mcp.env:/mcp.env:ro
@@ -350,6 +350,7 @@ services:
 
 volumes:
   mcp-data:
+    name: mcp-data
 ```
 
 **Примечание:** Для развёртывания с доступом из интернета настоятельно **рекомендуется** использовать [обратный прокси](#использование-обратного-прокси) для добавления HTTPS. В этом случае также замените `"3000:3000/tcp"` на `"127.0.0.1:3000:3000/tcp"` в файле `docker-compose.yml`, чтобы предотвратить прямой доступ к незашифрованному порту.

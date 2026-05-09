@@ -340,7 +340,7 @@ services:
     container_name: mcp
     restart: always
     ports:
-      - "3000:3000/tcp"
+      - "3000:3000/tcp"  # For a host-based reverse proxy, change to "127.0.0.1:3000:3000/tcp"
     volumes:
       - mcp-data:/var/lib/mcp
       - ./mcp.env:/mcp.env:ro
@@ -350,6 +350,7 @@ services:
 
 volumes:
   mcp-data:
+    name: mcp-data
 ```
 
 **注意：** 对于面向互联网的部署，**强烈建议**使用[反向代理](#使用反向代理)添加 HTTPS。在这种情况下，还需将 `docker-compose.yml` 中的 `"3000:3000/tcp"` 改为 `"127.0.0.1:3000:3000/tcp"`，以防止直接访问未加密的端口。

@@ -340,7 +340,7 @@ services:
     container_name: mcp
     restart: always
     ports:
-      - "3000:3000/tcp"
+      - "3000:3000/tcp"  # For a host-based reverse proxy, change to "127.0.0.1:3000:3000/tcp"
     volumes:
       - mcp-data:/var/lib/mcp
       - ./mcp.env:/mcp.env:ro
@@ -350,6 +350,7 @@ services:
 
 volumes:
   mcp-data:
+    name: mcp-data
 ```
 
 **Note:** For internet-facing deployments, using a [reverse proxy](#using-a-reverse-proxy) to add HTTPS is **strongly recommended**. In that case, also change `"3000:3000/tcp"` to `"127.0.0.1:3000:3000/tcp"` in `docker-compose.yml`, to prevent direct access to the unencrypted port.
