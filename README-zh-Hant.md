@@ -27,7 +27,7 @@
 - AI/音訊：[Whisper (STT)](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh-Hant.md)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh-Hant.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh-Hant.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh-Hant.md)、[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh-Hant.md)
 - VPN：[WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-zh-Hant.md)、[OpenVPN](https://github.com/hwdsl2/docker-openvpn/blob/main/README-zh-Hant.md)、[IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh-Hant.md)、[Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-zh-Hant.md)
 
-**提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro 和 Embeddings 可以[協同使用](#與其他-ai-服務搭配使用)，在您自己的伺服器上建置完整的自託管 AI 技術堆疊——包含工具存取、本地 LLM、語音輸入/輸出和語意搜尋。參見 [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)，取得現成的設定和流水線範例。
+**提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro 和 Embeddings 可以[協同使用](#與其他-ai-服務搭配使用)，在您自己的伺服器上建置完整的自託管 AI 技術堆疊——包含工具存取、本地 LLM、語音輸入/輸出和語意搜尋。使用 [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack) 快速開始，一條命令即可部署完整技術堆疊。
 
 ## 安全說明
 
@@ -278,7 +278,7 @@ curl http://localhost:3000/health
   "mcpServers": {
     "gateway": {
       "url": "http://localhost:3000/mcp",
-      "transport": "sse",
+      "transport": "streamable-http",
       "headers": {
         "Authorization": "Bearer <api_key>"
       }
@@ -438,7 +438,7 @@ docker rm -f mcp
 | **[Kokoro（文字轉語音）](https://github.com/hwdsl2/docker-kokoro)** | 將文字轉換為自然語音 | `8880` |
 | **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | 為 AI 客戶端提供 MCP 工具（檔案系統、fetch、GitHub、搜尋、資料庫） | `3000` |
 
-**另請參閱：[Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — 提供現成的 docker-compose 設定和流水線範例。了解更多關於完整 AI 技術堆疊的部署方法。
+**另請參閱：[Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — 一條命令即可部署完整技術堆疊，提供現成的設定和流水線範例。
 
 **將 MCP Gateway 連接到 LiteLLM：**
 
@@ -446,7 +446,7 @@ docker rm -f mcp
 # 在 LiteLLM 設定中，將 MCP 閘道新增為工具來源：
 mcp_servers:
   - url: http://mcp:3000/mcp
-    transport: sse
+    transport: http
     headers:
       Authorization: "Bearer <mcp_api_key>"
 ```

@@ -27,7 +27,7 @@
 - AI/音频：[Whisper (STT)](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh.md)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh.md)、[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh.md)
 - VPN：[WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-zh.md)、[OpenVPN](https://github.com/hwdsl2/docker-openvpn/blob/main/README-zh.md)、[IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md)、[Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-zh.md)
 
-**提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro 和 Embeddings 可以[协同使用](#与其他-ai-服务配合使用)，在您自己的服务器上构建完整的自托管 AI 技术栈——包含工具访问、本地 LLM、语音输入/输出和语义搜索。参见 [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)，获取现成的配置和流水线示例。
+**提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro 和 Embeddings 可以[协同使用](#与其他-ai-服务配合使用)，在您自己的服务器上构建完整的自托管 AI 技术栈——包含工具访问、本地 LLM、语音输入/输出和语义搜索。使用 [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack) 快速开始，一条命令即可部署完整技术栈。
 
 ## 安全说明
 
@@ -278,7 +278,7 @@ curl http://localhost:3000/health
   "mcpServers": {
     "gateway": {
       "url": "http://localhost:3000/mcp",
-      "transport": "sse",
+      "transport": "streamable-http",
       "headers": {
         "Authorization": "Bearer <api_key>"
       }
@@ -438,7 +438,7 @@ docker rm -f mcp
 | **[Kokoro（文字转语音）](https://github.com/hwdsl2/docker-kokoro)** | 将文本转换为自然语音 | `8880` |
 | **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | 为 AI 客户端提供 MCP 工具（文件系统、fetch、GitHub、搜索、数据库） | `3000` |
 
-**另请参阅：[Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — 提供现成的 docker-compose 配置和流水线示例。了解更多关于完整 AI 技术栈的部署方法。
+**另请参阅：[Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — 一条命令即可部署完整技术栈，提供现成的配置和流水线示例。
 
 **将 MCP Gateway 连接到 LiteLLM：**
 
@@ -446,7 +446,7 @@ docker rm -f mcp
 # 在 LiteLLM 配置中，将 MCP 网关添加为工具来源：
 mcp_servers:
   - url: http://mcp:3000/mcp
-    transport: sse
+    transport: http
     headers:
       Authorization: "Bearer <mcp_api_key>"
 ```

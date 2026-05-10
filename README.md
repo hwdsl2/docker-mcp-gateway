@@ -27,7 +27,7 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 - AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)
 - VPN: [WireGuard](https://github.com/hwdsl2/docker-wireguard), [OpenVPN](https://github.com/hwdsl2/docker-openvpn), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server), [Headscale](https://github.com/hwdsl2/docker-headscale)
 
-**Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, self-hosted AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search. See [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack) for ready-made configurations and pipeline examples.
+**Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, self-hosted AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search. Get started quickly with [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack). Deploy the full stack with a single command.
 
 ## Security note
 
@@ -278,7 +278,7 @@ curl http://localhost:3000/health
   "mcpServers": {
     "gateway": {
       "url": "http://localhost:3000/mcp",
-      "transport": "sse",
+      "transport": "streamable-http",
       "headers": {
         "Authorization": "Bearer <api_key>"
       }
@@ -438,7 +438,7 @@ The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama (LLM)](
 | **[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro)** | Converts text to natural-sounding speech | `8880` |
 | **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | Provides MCP tools (filesystem, fetch, GitHub, search, databases) to AI clients | `3000` |
 
-**See also: [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — ready-made docker-compose configurations and pipeline examples. Learn more about deploying the full AI stack.
+**See also: [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — deploy the full stack with a single command, with ready-made configurations and pipeline examples.
 
 **Connect MCP Gateway to LiteLLM:**
 
@@ -446,7 +446,7 @@ The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama (LLM)](
 # In your LiteLLM config, add the MCP gateway as a tool source:
 mcp_servers:
   - url: http://mcp:3000/mcp
-    transport: sse
+    transport: http
     headers:
       Authorization: "Bearer <mcp_api_key>"
 ```
