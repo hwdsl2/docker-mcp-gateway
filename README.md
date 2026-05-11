@@ -2,7 +2,9 @@
 
 # MCP Gateway on Docker
 
-[![Build Status](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![License: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://img.shields.io/docker/pulls/hwdsl2/mcp-gateway)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![License: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
+
+Part of the [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack) — deploy a complete self-hosted AI stack with a single command.
 
 Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) gateway, providing authenticated access to multiple MCP tool servers over HTTP from a single endpoint. Powered by [MCPHub](https://github.com/samanhappy/mcphub) with Caddy auth proxy. Designed to be simple and secure by default.
 
@@ -24,10 +26,10 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 
 **Also available:**
 
-- AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)
+- AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama), [Docling](https://github.com/hwdsl2/docker-docling)
 - VPN: [WireGuard](https://github.com/hwdsl2/docker-wireguard), [OpenVPN](https://github.com/hwdsl2/docker-openvpn), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server), [Headscale](https://github.com/hwdsl2/docker-headscale)
 
-**Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, self-hosted AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search. Get started quickly with [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack). Deploy the full stack with a single command.
+**Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, Docling, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, self-hosted AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search.
 
 ## Security note
 
@@ -427,7 +429,7 @@ Your configuration and API key are preserved in the `mcp-data` volume.
 
 ## Using with other AI services
 
-The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama (LLM)](https://github.com/hwdsl2/docker-ollama), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), and [Embeddings](https://github.com/hwdsl2/docker-embeddings) images can be combined to build a complete, self-hosted AI stack on your own server — from voice I/O to RAG-powered question answering. MCP Gateway provides tools (file access, web search, GitHub, databases) to any LLM client that supports MCP. Whisper, Kokoro, and Embeddings run fully locally. Ollama runs all LLM inference locally, so no data is sent to third parties. When using LiteLLM with external providers (e.g., OpenAI, Anthropic), your data will be sent to those providers.
+The MCP Gateway, Ollama (LLM), LiteLLM, Whisper (STT), Kokoro (TTS), Docling, and Embeddings images can be combined to build a complete, self-hosted AI stack on your own server — from voice I/O to RAG-powered question answering. MCP Gateway provides tools (file access, web search, GitHub, databases) to any LLM client that supports MCP. Whisper, Kokoro, Docling, and Embeddings run fully locally. Ollama runs all LLM inference locally, so no data is sent to third parties. When using LiteLLM with external providers (e.g., OpenAI, Anthropic), your data will be sent to those providers.
 
 | Service | Role | Default port |
 |---|---|---|
@@ -437,6 +439,7 @@ The [MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway), [Ollama (LLM)](
 | **[Whisper (STT)](https://github.com/hwdsl2/docker-whisper)** | Transcribes spoken audio to text | `9000` |
 | **[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro)** | Converts text to natural-sounding speech | `8880` |
 | **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | Provides MCP tools (filesystem, fetch, GitHub, search, databases) to AI clients | `3000` |
+| **[Docling](https://github.com/hwdsl2/docker-docling)** | Converts documents (PDF, DOCX, etc.) to structured text/Markdown | `5001` |
 
 **See also: [Docker AI Stack](https://github.com/hwdsl2/docker-ai-stack)** — deploy the full stack with a single command, with ready-made configurations and pipeline examples.
 
