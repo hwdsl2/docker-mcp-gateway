@@ -97,7 +97,6 @@ chmod 700 /var/lib/mcp
 
 API_KEY_FILE="/var/lib/mcp/.api_key"
 PORT_FILE="/var/lib/mcp/.port"
-SERVER_ADDR_FILE="/var/lib/mcp/.server_addr"
 INITIALIZED_MARKER="/var/lib/mcp/.initialized"
 MCPHUB_CONFIG="/var/lib/mcp/mcp_settings.json"
 
@@ -131,7 +130,6 @@ else
     server_addr="<server ip>"
   fi
 fi
-printf '%s' "$server_addr" > "$SERVER_ADDR_FILE"
 
 echo
 echo "MCP Gateway Docker - https://github.com/hwdsl2/docker-mcp-gateway"

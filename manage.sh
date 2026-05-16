@@ -12,7 +12,6 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 MCP_DATA="/var/lib/mcp"
 API_KEY_FILE="${MCP_DATA}/.api_key"
 PORT_FILE="${MCP_DATA}/.port"
-SERVER_ADDR_FILE="${MCP_DATA}/.server_addr"
 SERVERS_FILE="${MCP_DATA}/.servers"
 
 exiterr() { echo "Error: $1" >&2; exit 1; }
@@ -70,12 +69,6 @@ load_config() {
     if [ -f "$API_KEY_FILE" ]; then
       MCP_API_KEY=$(cat "$API_KEY_FILE")
     fi
-  fi
-
-  if [ -f "$SERVER_ADDR_FILE" ]; then
-    SERVER_ADDR=$(cat "$SERVER_ADDR_FILE")
-  else
-    SERVER_ADDR="<server ip>"
   fi
 
   if [ -f "$SERVERS_FILE" ]; then
@@ -166,8 +159,8 @@ do_list_servers() {
   done
   IFS="$_IFS_ORIG"
   echo
-  echo "MCP endpoint for all servers: http://${SERVER_ADDR}:${MCP_PORT}/mcp"
-  echo "MCP endpoint for specific:    http://${SERVER_ADDR}:${MCP_PORT}/mcp/<server-name>"
+  echo "MCP endpoint for all servers: http://<server-ip>:${MCP_PORT}/mcp"
+  echo "MCP endpoint for specific:    http://<server-ip>:${MCP_PORT}/mcp/<server-name>"
   echo
 }
 
@@ -267,9 +260,9 @@ do_show_key() {
   echo " ${MCP_API_KEY}"
   echo "==========================================================="
   echo
-  echo "Gateway endpoint:  http://${SERVER_ADDR}:${MCP_PORT}"
-  echo "MCP all servers:   http://${SERVER_ADDR}:${MCP_PORT}/mcp"
-  echo "Dashboard:         http://${SERVER_ADDR}:${MCP_PORT}/"
+  echo "Gateway endpoint:  http://<server-ip>:${MCP_PORT}"
+  echo "MCP all servers:   http://<server-ip>:${MCP_PORT}/mcp"
+  echo "Dashboard:         http://<server-ip>:${MCP_PORT}/"
   echo
 }
 
