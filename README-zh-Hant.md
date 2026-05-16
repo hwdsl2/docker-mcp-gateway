@@ -315,7 +315,6 @@ curl http://localhost:3000/health
 ├── .api_key            # API 金鑰（自動產生，或從 MCP_API_KEY 同步）
 ├── .initialized        # 首次執行標記
 ├── .port               # 儲存的連接埠（供 mcp_manage 使用）
-├── .server_addr        # 快取的伺服器位址（供 mcp_manage --showkey 使用）
 ├── .servers            # 已啟用伺服器清單（供 mcp_manage 使用）
 └── .Caddyfile          # 產生的 Caddy 設定（驗證代理）
 ```

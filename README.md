@@ -315,7 +315,6 @@ All gateway data is stored in the Docker volume (`/var/lib/mcp` inside the conta
 ├── .api_key            # API key (auto-generated, or synced from MCP_API_KEY)
 ├── .initialized        # First-run marker
 ├── .port               # Saved port (used by mcp_manage)
-├── .server_addr        # Cached server address (used by mcp_manage --showkey)
 ├── .servers            # Enabled servers list (used by mcp_manage)
 └── .Caddyfile          # Generated Caddy config (auth proxy)
 ```
