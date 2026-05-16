@@ -375,9 +375,9 @@ fi
 # Display connection info
 echo
 echo "==========================================================="
-echo " MCP Gateway API key"
+echo "MCP Gateway API key"
 echo "==========================================================="
-echo " ${api_key}"
+echo "${api_key}"
 echo "==========================================================="
 echo
 echo "Gateway endpoint: http://${server_addr}:${MCP_PORT}"

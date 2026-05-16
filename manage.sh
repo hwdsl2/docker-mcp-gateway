@@ -255,9 +255,9 @@ do_show_key() {
     return
   fi
   echo "==========================================================="
-  echo " MCP Gateway API key"
+  echo "MCP Gateway API key"
   echo "==========================================================="
-  echo " ${MCP_API_KEY}"
+  echo "${MCP_API_KEY}"
   echo "==========================================================="
   echo
   echo "Gateway endpoint:  http://<server-ip>:${MCP_PORT}"
