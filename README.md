@@ -31,6 +31,10 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 
 **Tip:** MCP Gateway, Ollama, LiteLLM, Whisper, Kokoro, Docling, and Embeddings can be [used together](#using-with-other-ai-services) to build a complete, self-hosted AI stack on your own server — with tool access, local LLMs, voice I/O, and semantic search.
 
+## Community
+
+- Discussions and showcases: [r/selfhostedstack](https://www.reddit.com/r/selfhostedstack/)
+
 ## Security note
 
 MCP servers have no built-in authentication. Exposing them publicly without auth is the same class of problem as the ~175,000 unauthenticated Ollama servers found publicly exposed ([source](https://www.sentinelone.com/labs/silent-brothers-ollama-hosts-form-anonymous-ai-network-beyond-platform-guardrails/)). This image enforces **Bearer token authentication on all API requests** via a built-in Caddy auth proxy, so unauthorized access is blocked even if the port is accidentally exposed.

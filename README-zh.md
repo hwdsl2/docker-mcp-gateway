@@ -31,6 +31,10 @@
 
 **提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro、Docling 和 Embeddings 可以[协同使用](#与其他-ai-服务配合使用)，在您自己的服务器上构建完整的自托管 AI 技术栈——包含工具访问、本地 LLM、语音输入/输出和语义搜索。
 
+## 社区
+
+- 讨论与展示：[r/selfhostedstack](https://www.reddit.com/r/selfhostedstack/)
+
 ## 安全说明
 
 MCP 服务器没有内置认证。在没有认证的情况下公开暴露它们，与约 175,000 台未经认证公开暴露的 Ollama 服务器属于同类问题（[来源](https://www.sentinelone.com/labs/silent-brothers-ollama-hosts-form-anonymous-ai-network-beyond-platform-guardrails/)）。本镜像通过内置的 Caddy 认证代理对**所有 API 请求强制执行 Bearer Token 认证**，即使端口意外暴露，未授权访问也会被阻止。
