@@ -99,6 +99,7 @@ API_KEY_FILE="/var/lib/mcp/.api_key"
 PORT_FILE="/var/lib/mcp/.port"
 INITIALIZED_MARKER="/var/lib/mcp/.initialized"
 MCPHUB_CONFIG="/var/lib/mcp/mcp_settings.json"
+MCPHUB_CONFIG_GENERATOR="/opt/src/mcp-config.cjs"
 
 # Generate or load API key
 if [ -n "$MCP_API_KEY" ]; then
@@ -157,114 +158,35 @@ fi
 # -----------------------------------------------------------------------
 
 generate_mcphub_config() {
-  local config='{"mcpServers":{'
-  local first_server=true
-  local server_list=""
+  local tmp_config
 
-  if [ -n "$MCP_SERVERS" ]; then
-    server_list="$MCP_SERVERS"
+  [ -x "$MCPHUB_CONFIG_GENERATOR" ] || exiterr "MCPHub config generator not found."
+  tmp_config=$(mktemp "${MCPHUB_CONFIG}.XXXXXX") || exiterr "Could not create temporary MCPHub config."
+
+  if ! MCP_SERVERS="$MCP_SERVERS" \
+       MCP_FILESYSTEM_DIRS="$MCP_FILESYSTEM_DIRS" \
+       MCP_GITHUB_TOKEN="$MCP_GITHUB_TOKEN" \
+       MCP_BRAVE_API_KEY="$MCP_BRAVE_API_KEY" \
+       MCP_GIT_REPO="$MCP_GIT_REPO" \
+       MCP_POSTGRES_URL="$MCP_POSTGRES_URL" \
+       node "$MCPHUB_CONFIG_GENERATOR" > "$tmp_config"; then
+    rm -f "$tmp_config"
+    exiterr "Failed to generate MCPHub config."
   fi
 
-  if [ -z "$server_list" ]; then
-    # No servers configured — generate minimal config with fetch as default
-    config="${config}"'"fetch":{"command":"uvx","args":["mcp-server-fetch"]}'
-    echo
-    echo "Note: MCP_SERVERS not set. Enabling 'fetch' server as default."
-    echo "      Set MCP_SERVERS in your env file to configure servers."
-  else
-    _IFS_ORIG="$IFS"
-    IFS=','
-    for _server in $server_list; do
-      IFS="$_IFS_ORIG"
-      _server=$(printf '%s' "$_server" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-      [ -z "$_server" ] && continue
-
-      _first_server_before="$first_server"
-      if ! $first_server; then
-        config="${config},"
-      fi
-      first_server=false
-
-      case "$_server" in
-        filesystem)
-          if [ -z "$MCP_FILESYSTEM_DIRS" ]; then
-            echo "Warning: 'filesystem' server enabled but MCP_FILESYSTEM_DIRS not set." >&2
-            echo "         Using /data as default. Bind-mount directories into /data/." >&2
-            MCP_FILESYSTEM_DIRS="/data"
-          fi
-          # Build args array: command + directories
-          local fs_args='"npx","@modelcontextprotocol/server-filesystem"'
-          _IFS2="$IFS"
-          IFS=','
-          for _dir in $MCP_FILESYSTEM_DIRS; do
-            IFS="$_IFS2"
-            _dir=$(printf '%s' "$_dir" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-            [ -z "$_dir" ] && continue
-            fs_args="${fs_args},\"${_dir}\""
-          done
-          IFS="$_IFS2"
-          config="${config}\"filesystem\":{\"command\":\"npx\",\"args\":[${fs_args}]}"
-          ;;
-        fetch)
-          config="${config}\"fetch\":{\"command\":\"uvx\",\"args\":[\"mcp-server-fetch\"]}"
-          ;;
-        github)
-          if [ -z "$MCP_GITHUB_TOKEN" ]; then
-            echo "Warning: 'github' server enabled but MCP_GITHUB_TOKEN not set." >&2
-            echo "         The server may not function correctly." >&2
-          fi
-          config="${config}\"github\":{\"command\":\"npx\",\"args\":[\"@modelcontextprotocol/server-github\"],\"env\":{\"GITHUB_PERSONAL_ACCESS_TOKEN\":\"${MCP_GITHUB_TOKEN}\"}}"
-          ;;
-        brave-search)
-          if [ -z "$MCP_BRAVE_API_KEY" ]; then
-            echo "Warning: 'brave-search' server enabled but MCP_BRAVE_API_KEY not set." >&2
-            echo "         The server will not function correctly." >&2
-          fi
-          config="${config}\"brave-search\":{\"command\":\"npx\",\"args\":[\"@modelcontextprotocol/server-brave-search\"],\"env\":{\"BRAVE_API_KEY\":\"${MCP_BRAVE_API_KEY}\"}}"
-          ;;
-        git)
-          if [ -z "$MCP_GIT_REPO" ]; then
-            echo "Warning: 'git' server enabled but MCP_GIT_REPO not set." >&2
-            echo "         Using /repo as default. Bind-mount your repository into /repo." >&2
-            MCP_GIT_REPO="/repo"
-          fi
-          config="${config}\"git\":{\"command\":\"uvx\",\"args\":[\"mcp-server-git\",\"--repository\",\"${MCP_GIT_REPO}\"]}"
-          ;;
-        postgres)
-          if [ -z "$MCP_POSTGRES_URL" ]; then
-            exiterr "'postgres' server enabled but MCP_POSTGRES_URL not set."
-          fi
-          config="${config}\"postgres\":{\"command\":\"npx\",\"args\":[\"@modelcontextprotocol/server-postgres\",\"${MCP_POSTGRES_URL}\"]}"
-          ;;
-        memory)
-          config="${config}\"memory\":{\"command\":\"npx\",\"args\":[\"@modelcontextprotocol/server-memory\"]}"
-          ;;
-        sequential-thinking)
-          config="${config}\"sequential-thinking\":{\"command\":\"npx\",\"args\":[\"@modelcontextprotocol/server-sequential-thinking\"]}"
-          ;;
-        *)
-          echo "Warning: Unknown MCP server '$_server'. Skipping." >&2
-          # Remove the comma that was speculatively added, and restore first_server
-          config="${config%,}"
-          first_server="$_first_server_before"
-          ;;
-      esac
-      IFS=','
-    done
-    IFS="$_IFS_ORIG"
+  if ! node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));' "$tmp_config"; then
+    rm -f "$tmp_config"
+    exiterr "Generated MCPHub config is not valid JSON."
   fi
 
-  # Close mcpServers object (single brace — root stays open)
-  config="${config}}"
-
-  # Disable MCPHub's own bearer auth — Caddy handles auth externally
-  config="${config},\"systemConfig\":{\"routing\":{\"enableBearerAuth\":false}}"
-
-  # Close root object
-  config="${config}}"
-
-  printf '%s' "$config" > "$MCPHUB_CONFIG"
-  chmod 600 "$MCPHUB_CONFIG"
+  chmod 600 "$tmp_config" || {
+    rm -f "$tmp_config"
+    exiterr "Could not secure generated MCPHub config."
+  }
+  mv -f "$tmp_config" "$MCPHUB_CONFIG" || {
+    rm -f "$tmp_config"
+    exiterr "Could not install generated MCPHub config."
+  }
 }
 
 # Only generate config when it does not already exist.

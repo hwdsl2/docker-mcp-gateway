@@ -42,8 +42,9 @@ RUN npm install -g \
 
 COPY ./run.sh /opt/src/run.sh
 COPY ./manage.sh /opt/src/manage.sh
+COPY ./mcp-config.cjs /opt/src/mcp-config.cjs
 COPY ./LICENSE.md /opt/src/LICENSE.md
-RUN chmod 755 /opt/src/run.sh /opt/src/manage.sh \
+RUN chmod 755 /opt/src/run.sh /opt/src/manage.sh /opt/src/mcp-config.cjs \
     && ln -s /opt/src/manage.sh /usr/local/bin/mcp_manage
 
 EXPOSE 3000/tcp
