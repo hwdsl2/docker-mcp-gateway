@@ -24,6 +24,71 @@ jobs:
           pwd
           ls -ld mcp.env.example
 
+          CONFIG_FILE=$(mktemp)
+          MCP_SERVERS='filesystem,fetch,github,brave-search,git,postgres,memory,sequential-thinking,unknown' \
+          MCP_FILESYSTEM_DIRS='/data/docs,/data/quoted "dir"\path' \
+          MCP_GITHUB_TOKEN='ghp_token"with\slash' \
+          MCP_BRAVE_API_KEY='brave"key\slash' \
+          MCP_GIT_REPO='/repo/quoted "repo"\path' \
+          MCP_POSTGRES_URL='postgresql://user:p"w\slash@postgres:5432/db?sslmode=disable' \
+            node ./mcp-config.cjs > "$CONFIG_FILE"
+          node - "$CONFIG_FILE" <<'NODE'
+          const assert = require('assert');
+          const fs = require('fs');
+          const cfg = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+
+          assert.strictEqual(cfg.systemConfig.routing.enableBearerAuth, false);
+          assert.deepStrictEqual(cfg.bearerKeys, []);
+          assert.deepStrictEqual(Object.keys(cfg.mcpServers), [
+            'filesystem',
+            'fetch',
+            'github',
+            'brave-search',
+            'git',
+            'postgres',
+            'memory',
+            'sequential-thinking',
+          ]);
+          assert.deepStrictEqual(cfg.mcpServers.filesystem.args, [
+            '@modelcontextprotocol/server-filesystem',
+            '/data/docs',
+            '/data/quoted "dir"\\path',
+          ]);
+          assert.strictEqual(cfg.mcpServers.github.env.GITHUB_PERSONAL_ACCESS_TOKEN, 'ghp_token"with\\slash');
+          assert.strictEqual(cfg.mcpServers['brave-search'].env.BRAVE_API_KEY, 'brave"key\\slash');
+          assert.strictEqual(cfg.mcpServers.git.args[2], '/repo/quoted "repo"\\path');
+          assert.strictEqual(
+            cfg.mcpServers.postgres.args[1],
+            'postgresql://user:p"w\\slash@postgres:5432/db?sslmode=disable',
+          );
+          NODE
+
+          # Default 'fetch' server when MCP_SERVERS is unset or empty.
+          DEFAULT_FILE=$(mktemp)
+          MCP_SERVERS='' node ./mcp-config.cjs > "$DEFAULT_FILE" 2>/dev/null
+          node - "$DEFAULT_FILE" <<'NODE'
+          const assert = require('assert');
+          const fs = require('fs');
+          const cfg = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          assert.deepStrictEqual(Object.keys(cfg.mcpServers), ['fetch']);
+          assert.strictEqual(cfg.mcpServers.fetch.command, 'uvx');
+          assert.deepStrictEqual(cfg.mcpServers.fetch.args, ['mcp-server-fetch']);
+          assert.strictEqual(cfg.systemConfig.routing.enableBearerAuth, false);
+          assert.deepStrictEqual(cfg.bearerKeys, []);
+          NODE
+
+          BAD_ERR=$(mktemp)
+          if MCP_SERVERS=postgres node ./mcp-config.cjs >/dev/null 2>"$BAD_ERR"; then
+            echo "Expected postgres config generation to fail without MCP_POSTGRES_URL"
+            exit 1
+          fi
+          grep -q "MCP_POSTGRES_URL" "$BAD_ERR" || {
+            echo "Expected missing MCP_POSTGRES_URL error"
+            cat "$BAD_ERR"
+            exit 1
+          }
+          rm -f "$CONFIG_FILE" "$DEFAULT_FILE" "$BAD_ERR"
+
           set -x
 
           docker build -t mcp-gateway-test .
@@ -68,6 +133,18 @@ jobs:
 
           # Verify health endpoint (no auth required)
           docker exec "$TEST_ID" curl -sf http://127.0.0.1:3000/health
+
+          # Verify generated config remains valid JSON and leaves MCPHub bearer auth disabled.
+          docker exec "$TEST_ID" node -e '
+            const fs = require("fs");
+            const cfg = JSON.parse(fs.readFileSync("/var/lib/mcp/mcp_settings.json", "utf8"));
+            if (cfg.systemConfig?.routing?.enableBearerAuth !== false) {
+              throw new Error("MCPHub bearer auth must stay disabled behind Caddy");
+            }
+            if (!Array.isArray(cfg.bearerKeys) || cfg.bearerKeys.length !== 0) {
+              throw new Error("Expected generated bearerKeys to be an empty array");
+            }
+          '
 
           # Get API key
           MCP_KEY=$(docker exec "$TEST_ID" mcp_manage --getkey)
