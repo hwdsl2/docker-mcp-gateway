@@ -29,8 +29,6 @@
 - AI 套件：[Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh.md)
 - 相关 AI 服务：[Whisper (STT)](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh.md)、[Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh.md)、[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh.md)、[Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-zh.md)
 
-**提示：** MCP Gateway、Ollama、LiteLLM、Whisper、Kokoro、Docling 和 Embeddings 可以[协同使用](#与其他-ai-服务配合使用)，在您自己的服务器上构建完整的自托管 AI 技术栈——包含工具访问、本地 LLM、语音输入/输出和语义搜索。
-
 ## 社区
 
 - 📬 [订阅项目更新](https://selfhostedstack.beehiiv.com/subscribe?utm_campaign=ai-zh)（每月 1–2 封邮件）——获取免费的 AI 和 VPN 部署指南（PDF，英文）
@@ -436,19 +434,9 @@ docker rm -f mcp
 
 ## 与其他 AI 服务配合使用
 
-MCP Gateway、Ollama (LLM)、LiteLLM、Whisper (STT)、Kokoro (TTS)、Docling 和 Embeddings 镜像可以组合使用，在您自己的服务器上构建完整的自托管 AI 技术栈——从语音输入/输出到 RAG 问答。MCP Gateway 为支持 MCP 的任何 LLM 客户端提供工具（文件访问、网页搜索、GitHub、数据库）。Whisper、Kokoro、Docling 和 Embeddings 完全在本地运行。Ollama 在本地运行所有 LLM 推理，无需向第三方发送数据。使用 LiteLLM 接入外部提供商（如 OpenAI、Anthropic）时，您的数据将发送给这些提供商。
+MCP Gateway 可作为更广泛的自托管 AI 设置中的 MCP 工具网关。
 
-| 服务 | 作用 | 默认端口 |
-|---|---|---|
-| **[Ollama (LLM)](https://github.com/hwdsl2/docker-ollama)** | 运行本地 LLM 模型（llama3、qwen、mistral 等） | `11434` |
-| **[LiteLLM](https://github.com/hwdsl2/docker-litellm)** | AI 网关 — 将请求路由到 Ollama、OpenAI、Anthropic 等 100+ 提供商 | `4000` |
-| **[Embeddings](https://github.com/hwdsl2/docker-embeddings)** | 将文本转换为向量，用于语义搜索和 RAG | `8000` |
-| **[Whisper（语音转文字）](https://github.com/hwdsl2/docker-whisper)** | 将语音音频转录为文本 | `9000` |
-| **[Kokoro（文字转语音）](https://github.com/hwdsl2/docker-kokoro)** | 将文本转换为自然语音 | `8880` |
-| **[MCP Gateway](https://github.com/hwdsl2/docker-mcp-gateway)** | 为 AI 客户端提供 MCP 工具（文件系统、fetch、GitHub、搜索、数据库） | `3000` |
-| **[Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-zh.md)** | 将文档（PDF、DOCX 等）转换为结构化文本/Markdown | `5001` |
-
-**另请参阅：[Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh.md)** — 一条命令即可部署完整技术栈，提供现成的配置和流水线示例。
+如需完整和轻量级 Docker Compose 技术栈、手动 `docker run` 示例，以及结合 Kokoro、Embeddings、LiteLLM、Ollama、Docling 和 MCP Gateway 的语音/RAG/MCP 流水线示例，请参阅 [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh.md)。
 
 **将 MCP Gateway 连接到 LiteLLM：**
 
