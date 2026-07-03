@@ -2,6 +2,9 @@ name: mcp_gateway_test
 
 on: workflow_call
 
+permissions:
+  contents: read
+
 jobs:
   mcp_gateway_test:
     runs-on: ubuntu-24.04
