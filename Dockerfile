@@ -31,14 +31,15 @@ RUN set -x \
     && mkdir -p /var/lib/mcp
 
 # Install additional MCP server packages not bundled in upstream
-RUN npm install -g \
+RUN NPM_BEFORE="$(date -u -d '3 days ago' '+%Y-%m-%dT%H:%M:%SZ')" \
+    && npm install -g --before="$NPM_BEFORE" \
       @modelcontextprotocol/server-filesystem \
       @modelcontextprotocol/server-github \
       @modelcontextprotocol/server-brave-search \
       @modelcontextprotocol/server-postgres \
       @modelcontextprotocol/server-memory \
       @modelcontextprotocol/server-sequential-thinking \
-    2>/dev/null || true
+    || echo "Warning: optional MCP server package install failed"
 
 COPY ./run.sh /opt/src/run.sh
 COPY ./manage.sh /opt/src/manage.sh
