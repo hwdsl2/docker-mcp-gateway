@@ -136,6 +136,7 @@ docker image tag quay.io/hwdsl2/mcp-gateway hwdsl2/mcp-gateway
 | `MCP_HOST` | 在啟動資訊和 `--showkey` 輸出中顯示的主機名稱或 IP | 自動偵測 |
 | `MCP_SERVERS` | 要啟用的 MCP 伺服器清單（逗號分隔） | `fetch` |
 | `MCP_ADMIN_PASSWORD` | MCPHub 儀表板管理員帳戶密碼（未設定時首次啟動自動產生） | 自動產生 |
+| `MCP_DISABLE_USAGE_COUNTS` | 設為 `1` 可停用匿名彙總使用計數。 | *（未設定）* |
 
 **注意：** 在 `env` 檔案中，您可以將值用單引號括起來，例如 `VAR='value'`。不要在 `=` 兩側新增空格。如果您更改了 `MCP_PORT`，請相應地更新 `docker run` 指令中的 `-p` 旗標。
 
@@ -457,6 +458,10 @@ mcp_servers:
     headers:
       Authorization: "Bearer <mcp_api_key>"
 ```
+
+## 使用計數
+
+此映像使用公開的 GitHub Release 資源下載次數進行匿名彙總使用計數。計數是近似值，不代表唯一使用者或活躍安裝。映像不會傳送遙測負載，也不會使用私有收集器。僅當閘道成功啟動且掛載了 `/var/lib/mcp` 卷後，才會以盡力而為方式計數；當該持久化安裝首次執行不同映像建置時，也會再次計數。若要退出，請設定 `MCP_DISABLE_USAGE_COUNTS=1`。
 
 ## 技術細節
 

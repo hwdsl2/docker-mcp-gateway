@@ -136,6 +136,7 @@ This Docker image uses the following variables, that can be declared in an `env`
 | `MCP_HOST` | Hostname or IP shown in startup info and `--showkey` output | Auto-detected |
 | `MCP_SERVERS` | Comma-separated list of MCP servers to enable | `fetch` |
 | `MCP_ADMIN_PASSWORD` | Password for the MCPHub dashboard admin account (auto-generated on first start if not set) | Auto-generated |
+| `MCP_DISABLE_USAGE_COUNTS` | Set to `1` to disable anonymous aggregate usage counts. | *(not set)* |
 
 **Note:** In your `env` file, you may enclose values in single quotes, e.g. `VAR='value'`. Do not add spaces around `=`. If you change `MCP_PORT`, update the `-p` flag in the `docker run` command accordingly.
 
@@ -457,6 +458,10 @@ mcp_servers:
     headers:
       Authorization: "Bearer <mcp_api_key>"
 ```
+
+## Usage counts
+
+This image uses public GitHub release asset download counts for anonymous, aggregate usage counts. Counts are approximate and are not unique users or active installs. The image does not send a telemetry payload or use a private collector. It only attempts the best-effort count after the gateway starts successfully with a mounted `/var/lib/mcp` volume, and again when that persistent install first runs a different image build. To opt out, set `MCP_DISABLE_USAGE_COUNTS=1`.
 
 ## Technical details
 
