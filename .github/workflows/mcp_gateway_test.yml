@@ -100,6 +100,7 @@ jobs:
             docker run \
               --name "$TEST_ID" \
               --restart=always \
+              -e MCP_DISABLE_USAGE_COUNTS=1 \
               -v mcp-gateway-test-data:/var/lib/mcp \
               -v ./mcp.env.example:/mcp.env:ro \
               -p 3000:3000/tcp \
@@ -108,6 +109,7 @@ jobs:
             docker run \
               --name "$TEST_ID" \
               --restart=always \
+              -e MCP_DISABLE_USAGE_COUNTS=1 \
               -v mcp-gateway-test-data:/var/lib/mcp \
               -p 3000:3000/tcp \
               -d mcp-gateway-test
@@ -115,6 +117,7 @@ jobs:
             docker run \
               --name "$TEST_ID" \
               --restart=always \
+              -e MCP_DISABLE_USAGE_COUNTS=1 \
               -v mcp-gateway-test-data:/var/lib/mcp \
               -v mcp-gateway-test-shared:/var/lib/mcp-shared \
               -p 3000:3000/tcp \
