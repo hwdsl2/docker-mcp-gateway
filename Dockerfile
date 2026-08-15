@@ -4,12 +4,12 @@
 # This work is licensed under the MIT License
 # See: https://opensource.org/licenses/MIT
 
-FROM samanhappy/mcphub:latest
+FROM samanhappy/mcphub:1.0.27@sha256:9a7c3aa43e4dc26af5c225b6fc85b0953b7d7b151cbc1ccb82cdd1c634e71f26
 
 WORKDIR /opt/src
 
 # Install Caddy for auth proxy and curl for health checks.
-# MCPHub base image is Debian Bookworm with Node 22 and pnpm.
+# MCPHub base image is Debian Trixie with Node 22 and pnpm.
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -31,15 +31,14 @@ RUN set -x \
     && mkdir -p /var/lib/mcp
 
 # Install additional MCP server packages not bundled in upstream
-RUN NPM_BEFORE="$(date -u -d '3 days ago' '+%Y-%m-%dT%H:%M:%SZ')" \
+RUN NPM_BEFORE="$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ')" \
     && npm install -g --before="$NPM_BEFORE" \
       @modelcontextprotocol/server-filesystem \
       @modelcontextprotocol/server-github \
       @modelcontextprotocol/server-brave-search \
       @modelcontextprotocol/server-postgres \
       @modelcontextprotocol/server-memory \
-      @modelcontextprotocol/server-sequential-thinking \
-    || echo "Warning: optional MCP server package install failed"
+      @modelcontextprotocol/server-sequential-thinking
 
 COPY ./run.sh /opt/src/run.sh
 COPY ./manage.sh /opt/src/manage.sh

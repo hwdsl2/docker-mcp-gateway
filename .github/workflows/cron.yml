@@ -1,27 +1,22 @@
-name: build cron
+name: build manual
 
 on:
-  schedule:
-    - cron: '30 3 * * 1,4'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  check_update:
+  shellcheck:
     if: github.repository_owner == 'hwdsl2'
-    uses: ./.github/workflows/check_update.yml
-    secrets:
-      CACHE_NAME: ${{ secrets.CACHE_NAME }}
+    uses: ./.github/workflows/shellcheck.yml
 
   mcp_gateway_test:
-    needs: [check_update]
-    if: needs.check_update.outputs.should_test == 'true'
+    if: github.repository_owner == 'hwdsl2'
     uses: ./.github/workflows/mcp_gateway_test.yml
 
   buildx:
-    needs: [check_update, mcp_gateway_test]
-    if: needs.check_update.outputs.should_update == 'true'
+    needs: [shellcheck, mcp_gateway_test]
     uses: ./.github/workflows/buildx.yml
     secrets:
       CACHE_NAME: ${{ secrets.CACHE_NAME }}
