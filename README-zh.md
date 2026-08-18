@@ -8,6 +8,8 @@
 
 用于运行自托管 [MCP](https://modelcontextprotocol.io/)（模型上下文协议）网关的 Docker 镜像，通过单一端点提供对多个 MCP 工具服务器的经认证访问。基于 [MCPHub](https://github.com/samanhappy/mcphub) 和 Caddy 认证代理。设计简单，并默认安全。
 
+> 📘 **新书：**[The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon)——了解如何将此服务部署为完整且默认安全的私有 AI 技术栈的一部分。
+
 **功能特性：**
 
 - **默认安全** — 所有 API 请求均需 Bearer Token（首次启动时自动生成）
@@ -26,7 +28,6 @@
 
 **另提供：**
 
-- **新书：**[The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon)——将此服务部署为安全、完整的私有 AI 技术栈的一部分
 - 相关 AI 服务：[Whisper](https://github.com/hwdsl2/docker-whisper/blob/main/README-zh.md)、[Kokoro](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh.md)、[Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh.md)、[Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-zh.md)
 
 ## 社区

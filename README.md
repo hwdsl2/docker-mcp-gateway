@@ -8,6 +8,8 @@ Part of the [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stac
 
 Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) gateway, providing authenticated access to multiple MCP tool servers over HTTP from a single endpoint. Powered by [MCPHub](https://github.com/samanhappy/mcphub) with Caddy auth proxy. Designed to be simple and secure by default.
 
+> 📘 **New book:** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) — learn how to deploy this service as part of a complete, secure-by-default private AI stack.
+
 **Features:**
 
 - **Secure by default** — all API requests require a Bearer token (auto-generated on first start)
@@ -26,7 +28,6 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 
 **Also available:**
 
-- **New book:** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) — deploy this service as part of a secure, complete private AI stack
 - Related AI services: [Whisper](https://github.com/hwdsl2/docker-whisper), [Kokoro](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama](https://github.com/hwdsl2/docker-ollama), [Docling](https://github.com/hwdsl2/docker-docling)
 
 ## Community
