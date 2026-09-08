@@ -8,8 +8,6 @@
 
 Docker-образ для запуска самостоятельно размещённого шлюза [MCP](https://modelcontextprotocol.io/) (Model Context Protocol), обеспечивающего аутентифицированный доступ к нескольким MCP-серверам инструментов через единую конечную точку. Основан на [MCPHub](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy. Разработан для простоты и безопасности по умолчанию.
 
-> 📘 **Новая книга:** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) — узнайте, как развернуть этот сервис в составе полного приватного AI-стека с безопасными настройками по умолчанию.
-
 **Возможности:**
 
 - **Безопасность по умолчанию** — все API-запросы требуют Bearer Token (автоматически генерируется при первом запуске)
@@ -26,26 +24,11 @@ Docker-образ для запуска самостоятельно разме�
 - Постоянное хранение конфигурации через Docker-том
 - Мультиархитектурный: `linux/amd64`, `linux/arm64`
 
+> 📘 **Новая книга:** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon). Практическое руководство по созданию, защите и эксплуатации собственного приватного AI-стека.
+
 **Также доступно:**
 
 - Связанные AI-сервисы: [Whisper](https://github.com/hwdsl2/docker-whisper/blob/main/README-ru.md), [Kokoro](https://github.com/hwdsl2/docker-kokoro/blob/main/README-ru.md), [Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-ru.md), [LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-ru.md), [Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-ru.md), [Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-ru.md)
-
-## Сообщество
-
-- 📬 [Подписаться на обновления проектов](https://selfhostedstack.beehiiv.com/subscribe?utm_campaign=ai-ru) (1–2 письма в месяц) — получить бесплатные руководства по развёртыванию AI и VPN (PDF, на английском)
-- 💬 Присоединяйтесь к сообществу [r/selfhostedstack](https://www.reddit.com/r/selfhostedstack/) для обсуждений и демонстрации проектов
-- ⭐ Поставьте звезду репозиторию, если он оказался вам полезен — это поможет другим пользователям его найти.
-
-<details>
-<summary>Самостоятельно размещаемые VPN и сетевые проекты</summary>
-
-- [Setup IPsec VPN](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/README-ru.md)
-- [IPsec VPN на Docker](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-ru.md)
-- [WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-ru.md)
-- [OpenVPN](https://github.com/hwdsl2/docker-openvpn/blob/main/README-ru.md)
-- [Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-ru.md)
-
-</details>
 
 ## Замечание по безопасности
 
@@ -100,6 +83,23 @@ curl http://localhost:3000/health
 **Примечание:** Команды управления через `docker exec` (`mcp_manage`) не требуют API-ключа.
 
 Чтобы узнать больше об использовании этого образа, читайте разделы ниже.
+
+## Сообщество
+
+- 📬 [Получайте новости проектов и бесплатные руководства по развёртыванию](https://selfhostedstack.beehiiv.com/subscribe?utm_campaign=ai-ru) (1–2 письма в месяц; руководства в формате PDF на английском языке)
+- 💬 Присоединяйтесь к сообществу [r/selfhostedstack](https://www.reddit.com/r/selfhostedstack/) для обсуждений и демонстрации проектов
+- ⭐ Поставьте звезду репозиторию, если он оказался вам полезен — это поможет другим пользователям его найти.
+
+<details>
+<summary>Самостоятельно размещаемые VPN и сетевые проекты</summary>
+
+- [Setup IPsec VPN](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/README-ru.md)
+- [IPsec VPN на Docker](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-ru.md)
+- [WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-ru.md)
+- [OpenVPN](https://github.com/hwdsl2/docker-openvpn/blob/main/README-ru.md)
+- [Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-ru.md)
+
+</details>
 
 ## Требования
 
