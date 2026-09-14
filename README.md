@@ -24,7 +24,7 @@ Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model
 - Persistent configuration via a Docker volume
 - Multi-arch: `linux/amd64`, `linux/arm64`
 
-> 📘 **New book:** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon). A practical guide to building, securing, and operating your own private AI stack.
+> 📘 **Kindle Countdown Deal: $0.99/£0.99 (US & UK).** [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) is a practical guide to building, securing, and operating your own private AI stack.
 
 **Also available:**
 
