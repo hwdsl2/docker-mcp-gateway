@@ -49,7 +49,8 @@ docker run \
 
 首次啟動時，系統會自動產生 API 金鑰並顯示在容器日誌中。所有 API 請求均需此金鑰。
 
-**注意：** 對於面向網際網路的部署，**強烈建議**使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker run` 命令中的 `-p 3000:3000/tcp` 替換為 `-p 127.0.0.1:3000:3000/tcp`，以防止直接存取未加密的連接埠。
+> [!NOTE]
+> 對於面向網際網路的部署，請使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker run` 命令中的 `-p 3000:3000/tcp` 替換為 `-p 127.0.0.1:3000:3000/tcp`，以防止直接存取未加密的連接埠。
 
 **第二步。** 取得 API 金鑰：
 
@@ -250,11 +251,13 @@ MCP_KEY=$(docker exec mcp mcp_manage --getkey)
 
 使用 MCPHub 儀表板（`http://<伺服器>:3000/`）在不重新啟動容器的情況下新增、設定或移除 MCP 伺服器。變更將儲存至持久卷並在重新啟動後保留。
 
-> **注意：** `MCP_SERVERS` 僅在**首次執行**建立 `mcp_settings.json` 時生效。此後，儀表板是管理伺服器的方式。若要重新套用 `MCP_SERVERS`，請刪除設定檔並重新啟動：
-> ```bash
-> docker exec mcp rm /var/lib/mcp/mcp_settings.json
-> docker restart mcp
-> ```
+> [!NOTE]
+> `MCP_SERVERS` 僅在**首次執行**建立 `mcp_settings.json` 時生效。此後，請透過儀表板管理伺服器。以這種方式重設檔案，會取代透過儀表板儲存的所有伺服器設定。若要從頭重新套用 `MCP_SERVERS`，請刪除設定檔並重新啟動：
+
+```bash
+docker exec mcp rm /var/lib/mcp/mcp_settings.json
+docker restart mcp
+```
 
 ## 使用 API
 
@@ -371,7 +374,8 @@ volumes:
     name: mcp-data
 ```
 
-**注意：** 對於面向網際網路的部署，**強烈建議**使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker-compose.yml` 中的 `"3000:3000/tcp"` 改為 `"127.0.0.1:3000:3000/tcp"`，以防止直接存取未加密的連接埠。
+> [!NOTE]
+> 對於面向網際網路的部署，請使用[反向代理](#使用反向代理)新增 HTTPS。在這種情況下，還需將 `docker-compose.yml` 中的 `"3000:3000/tcp"` 改為 `"127.0.0.1:3000:3000/tcp"`，以防止直接存取未加密的連接埠。
 
 ## 使用反向代理
 

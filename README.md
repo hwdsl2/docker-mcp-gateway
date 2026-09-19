@@ -49,7 +49,8 @@ docker run \
 
 On first start, an API key is auto-generated and displayed in the container logs. All API requests require this key.
 
-**Note:** For internet-facing deployments, using a [reverse proxy](#using-a-reverse-proxy) to add HTTPS is **strongly recommended**. In that case, also replace `-p 3000:3000/tcp` with `-p 127.0.0.1:3000:3000/tcp` in the `docker run` command above, to prevent direct access to the unencrypted port.
+> [!NOTE]
+> For internet-facing deployments, use a [reverse proxy](#using-a-reverse-proxy) to add HTTPS. Also replace `-p 3000:3000/tcp` with `-p 127.0.0.1:3000:3000/tcp` in the `docker run` command above, to prevent direct access to the unencrypted port.
 
 **Step 2.** Get the API key:
 
@@ -250,11 +251,13 @@ MCP_KEY=$(docker exec mcp mcp_manage --getkey)
 
 Use the MCPHub dashboard at `http://<server>:3000/` to add, configure, or remove MCP servers without restarting the container. Changes are saved to the persistent volume and survive restarts.
 
-> **Note:** `MCP_SERVERS` only applies on the **first run** when `mcp_settings.json` is created. After that, the dashboard is the way to manage servers. To re-apply `MCP_SERVERS` from scratch, remove the config file and restart:
-> ```bash
-> docker exec mcp rm /var/lib/mcp/mcp_settings.json
-> docker restart mcp
-> ```
+> [!NOTE]
+> `MCP_SERVERS` only applies on the **first run** when `mcp_settings.json` is created. After that, the dashboard is the way to manage servers. Resetting the file this way replaces any server configuration saved through the dashboard. To re-apply `MCP_SERVERS` from scratch, remove the config file and restart:
+
+```bash
+docker exec mcp rm /var/lib/mcp/mcp_settings.json
+docker restart mcp
+```
 
 ## Using the API
 
@@ -371,7 +374,8 @@ volumes:
     name: mcp-data
 ```
 
-**Note:** For internet-facing deployments, using a [reverse proxy](#using-a-reverse-proxy) to add HTTPS is **strongly recommended**. In that case, also change `"3000:3000/tcp"` to `"127.0.0.1:3000:3000/tcp"` in `docker-compose.yml`, to prevent direct access to the unencrypted port.
+> [!NOTE]
+> For internet-facing deployments, use a [reverse proxy](#using-a-reverse-proxy) to add HTTPS. Also change `"3000:3000/tcp"` to `"127.0.0.1:3000:3000/tcp"` in `docker-compose.yml`, to prevent direct access to the unencrypted port.
 
 ## Using a reverse proxy
 
