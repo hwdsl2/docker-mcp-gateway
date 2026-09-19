@@ -4,7 +4,7 @@
 # This work is licensed under the MIT License
 # See: https://opensource.org/licenses/MIT
 
-FROM samanhappy/mcphub:1.0.27@sha256:9a7c3aa43e4dc26af5c225b6fc85b0953b7d7b151cbc1ccb82cdd1c634e71f26
+FROM samanhappy/mcphub:1.0.38@sha256:c8c4991f6e40a12089c6c9b9f7ae9ee67f0083d4bce401c1eb14cd602b883e20
 
 WORKDIR /opt/src
 
