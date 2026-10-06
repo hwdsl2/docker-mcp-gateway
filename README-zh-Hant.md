@@ -4,35 +4,27 @@
 
 [![建置狀態](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![授權條款: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-[Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh-Hant.md) 的一部分 ─ 一條命令部署完整的自託管 AI 技術棧。
-
 用於執行自託管 [MCP](https://modelcontextprotocol.io/)（模型上下文協定）閘道的 Docker 映像，透過單一端點提供對多個 MCP 工具伺服器的經驗證存取。基於 [MCPHub](https://github.com/samanhappy/mcphub) 和 Caddy 驗證代理。設計簡單，並預設安全。
 
 **功能特色：**
 
-- **預設安全** — 所有 API 請求均需 Bearer Token（首次啟動時自動產生）
-- 首次啟動時自動產生 API 金鑰，並儲存在持久化卷中
-- 多伺服器閘道 — 在單一 HTTP 端點後執行多個 MCP 工具伺服器
-- 路徑路由 — 透過 `/mcp` 存取所有伺服器，或透過 `/mcp/<名稱>` 存取指定伺服器
-- 支援 Streamable HTTP + SSE 兩種 MCP 傳輸模式
-- 儀表板 — 位於 `/` 的 Web UI，用於監控 MCP 伺服器狀態
-- 環境檔案設定 — 簡單的 `mcp.env` 檔案；無需編輯 JSON
-- 內建 MCP 伺服器：filesystem、fetch、GitHub、Brave Search、Git、PostgreSQL、memory、sequential-thinking
-- Caddy 反向代理對所有 API 請求強制執行 Bearer Token 驗證（`/health` 健康檢查除外）
-- 與 [LiteLLM](https://github.com/hwdsl2/docker-litellm) 配合，為任何 LLM 提供 MCP 工具存取
-- 透過 [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions) 自動建置和發布
-- 透過 Docker 卷持久化設定
-- 多架構：`linux/amd64`、`linux/arm64`
+- **預設安全：** Caddy 對 API 存取強制執行 Bearer Token 驗證；首次啟動時自動產生 API 金鑰，並儲存在持久化卷中。
+- **多伺服器閘道：** 在單一 HTTP 端點後執行多個 MCP 工具伺服器
+- **路徑路由：** 透過 `/mcp` 存取所有伺服器，或透過 `/mcp/<名稱>` 存取指定伺服器
+- **MCP 傳輸模式：** 支援 Streamable HTTP + SSE 兩種 MCP 傳輸模式
+- **內建 MCP 伺服器：** filesystem、fetch、GitHub、Brave Search、Git、PostgreSQL、memory、sequential-thinking
+- **儀表板：** 位於 `/` 的 Web UI，用於監控 MCP 伺服器狀態
+- **環境檔案設定：** 簡單的 `mcp.env` 檔案；無需編輯 JSON
+- **LiteLLM 整合：** 與 [LiteLLM](https://github.com/hwdsl2/docker-litellm) 配合，為相容的 LLM 提供 MCP 工具存取。
+- **自動建置：** 透過 [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions) 自動建置和發布
+
+也可作為 [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh-Hant.md) 的一部分使用，一條命令即可部署完整的自託管 AI 技術堆疊。
 
 > 📘 [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) 是一本關於建置、保護和維運自己的私有 AI 技術堆疊的實用指南。
 
 **另提供：**
 
 - 相關 AI 服務：[ScribeCrate](https://github.com/hwdsl2/scribecrate/blob/main/README-zh-Hant.md)、[Kokoro](https://github.com/hwdsl2/docker-kokoro/blob/main/README-zh-Hant.md)、[Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-zh-Hant.md)、[LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh-Hant.md)、[Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-zh-Hant.md)、[Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-zh-Hant.md)
-
-## 安全說明
-
-MCP 伺服器沒有內建驗證。在沒有驗證的情況下公開暴露它們，與約 175,000 台未經驗證公開暴露的 Ollama 伺服器屬於同類問題（[來源](https://www.sentinelone.com/labs/silent-brothers-ollama-hosts-form-anonymous-ai-network-beyond-platform-guardrails/)）。本映像透過內建的 Caddy 驗證代理對**所有 API 請求強制執行 Bearer Token 驗證**，即使連接埠意外暴露，未授權存取也會被阻止。
 
 ## 快速開始
 

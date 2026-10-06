@@ -4,35 +4,27 @@
 
 [![Статус сборки](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![Лицензия: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-Часть [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md) — разверните полный самостоятельно размещённый AI-стек одной командой.
-
 Docker-образ для запуска самостоятельно размещённого шлюза [MCP](https://modelcontextprotocol.io/) (Model Context Protocol), обеспечивающего аутентифицированный доступ к нескольким MCP-серверам инструментов через единую конечную точку. Основан на [MCPHub](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy. Разработан для простоты и безопасности по умолчанию.
 
 **Возможности:**
 
-- **Безопасность по умолчанию** — все API-запросы требуют Bearer Token (автоматически генерируется при первом запуске)
-- Автоматически генерирует API-ключ при первом запуске, сохраняя его в постоянном томе
-- Шлюз для нескольких серверов — запускает несколько MCP-серверов инструментов за единой конечной точкой HTTP
-- Маршрутизация по пути — доступ ко всем серверам через `/mcp` или к конкретному через `/mcp/<имя>`
-- Поддержка Streamable HTTP + SSE — оба режима транспорта MCP
-- Панель управления — веб-интерфейс на `/` для мониторинга состояния MCP-серверов
-- Конфигурация через env-файл — простой файл `mcp.env`; без редактирования JSON
-- Встроенные MCP-серверы: filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking
-- Обратный прокси Caddy обеспечивает аутентификацию Bearer Token для всех API-запросов (кроме `/health` для проверки работоспособности)
-- Интеграция с [LiteLLM](https://github.com/hwdsl2/docker-litellm) для предоставления инструментов MCP любой LLM
-- Автоматическая сборка и публикация через [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions)
-- Постоянное хранение конфигурации через Docker-том
-- Мультиархитектурный: `linux/amd64`, `linux/arm64`
+- **Безопасность по умолчанию:** Caddy обеспечивает аутентификацию Bearer Token для доступа к API; API-ключ автоматически генерируется при первом запуске и сохраняется в постоянном томе.
+- **Шлюз для нескольких серверов:** запускает несколько MCP-серверов инструментов за единой конечной точкой HTTP
+- **Маршрутизация по пути:** доступ ко всем серверам через `/mcp` или к конкретному через `/mcp/<имя>`
+- **Транспорт MCP:** Поддержка Streamable HTTP + SSE — оба режима транспорта MCP
+- **Встроенные MCP-серверы:** filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking
+- **Панель управления:** веб-интерфейс на `/` для мониторинга состояния MCP-серверов
+- **Настройка через env-файл:** простой файл `mcp.env`; без редактирования JSON
+- **Интеграция с LiteLLM:** подключите [LiteLLM](https://github.com/hwdsl2/docker-litellm), чтобы предоставить совместимым LLM доступ к инструментам MCP.
+- **Автоматическая сборка:** образы автоматически собираются и публикуются через [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions).
+
+Также доступен в составе [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md), который развёртывает полный AI-стек на собственном сервере одной командой.
 
 > 📘 [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon): практическое руководство по созданию, защите и эксплуатации собственного приватного ИИ-стека.
 
 **Также доступно:**
 
 - Связанные AI-сервисы: [ScribeCrate](https://github.com/hwdsl2/scribecrate/blob/main/README-ru.md), [Kokoro](https://github.com/hwdsl2/docker-kokoro/blob/main/README-ru.md), [Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-ru.md), [LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-ru.md), [Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-ru.md), [Docling](https://github.com/hwdsl2/docker-docling/blob/main/README-ru.md)
-
-## Замечание по безопасности
-
-MCP-серверы не имеют встроенной аутентификации. Публичное размещение без аутентификации — та же проблема, что и ~175 000 серверов Ollama, обнаруженных публично доступными без аутентификации ([источник](https://www.sentinelone.com/labs/silent-brothers-ollama-hosts-form-anonymous-ai-network-beyond-platform-guardrails/)). Этот образ через встроенный прокси аутентификации Caddy обеспечивает **аутентификацию Bearer Token для всех API-запросов**, поэтому даже при случайном открытии порта несанкционированный доступ будет заблокирован.
 
 ## Быстрый старт
 

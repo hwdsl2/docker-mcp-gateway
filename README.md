@@ -4,35 +4,27 @@
 
 [![Build Status](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![License: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-Part of the [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack) — deploy a complete self-hosted AI stack with a single command.
-
 Docker image to run a self-hosted [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) gateway, providing authenticated access to multiple MCP tool servers over HTTP from a single endpoint. Powered by [MCPHub](https://github.com/samanhappy/mcphub) with Caddy auth proxy. Designed to be simple and secure by default.
 
 **Features:**
 
-- **Secure by default** — all API requests require a Bearer token (auto-generated on first start)
-- Auto-generates an API key on first start, stored in the persistent volume
-- Multi-server gateway — run multiple MCP tool servers behind a single HTTP endpoint
-- Path-based routing — access all servers at `/mcp` or individual servers at `/mcp/<name>`
-- Streamable HTTP + SSE — both MCP transport modes supported
-- Dashboard — web UI at `/` for monitoring MCP server status
-- Env-file configuration — simple `mcp.env` file; no JSON editing
-- Built-in MCP servers: filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking
-- Caddy reverse proxy enforces Bearer token auth on all API requests (except `/health` health check)
-- Works with [LiteLLM](https://github.com/hwdsl2/docker-litellm) to give any LLM access to MCP tools
-- Automatically built and published via [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions)
-- Persistent configuration via a Docker volume
-- Multi-arch: `linux/amd64`, `linux/arm64`
+- **Secure by default:** Caddy enforces Bearer token authentication for API access; an API key is auto-generated on first start and stored in the persistent volume.
+- **Multi-server gateway:** run multiple MCP tool servers behind a single HTTP endpoint.
+- **Path-based routing:** access all servers at `/mcp` or individual servers at `/mcp/<name>`.
+- **MCP transports:** supports Streamable HTTP and SSE.
+- **Built-in MCP servers:** filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking.
+- **Dashboard:** web UI at `/` for monitoring MCP server status.
+- **Env-file configuration:** simple `mcp.env` file; no JSON editing.
+- **LiteLLM integration:** connect [LiteLLM](https://github.com/hwdsl2/docker-litellm) to give compatible LLMs access to MCP tools.
+- **Automated builds:** images are automatically built and published through [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions).
+
+Also available as part of the [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack), which deploys a complete self-hosted AI stack with a single command.
 
 > 📘 [The Self-Hosted AI Builder’s Guide](https://books2read.com/aiguide?store=amazon) is a practical guide to building, securing, and operating your own private AI stack.
 
 **Also available:**
 
 - Related AI services: [ScribeCrate](https://github.com/hwdsl2/scribecrate), [Kokoro](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm), [Ollama](https://github.com/hwdsl2/docker-ollama), [Docling](https://github.com/hwdsl2/docker-docling)
-
-## Security note
-
-MCP servers have no built-in authentication. Exposing them publicly without auth is the same class of problem as the ~175,000 unauthenticated Ollama servers found publicly exposed ([source](https://www.sentinelone.com/labs/silent-brothers-ollama-hosts-form-anonymous-ai-network-beyond-platform-guardrails/)). This image enforces **Bearer token authentication on all API requests** via a built-in Caddy auth proxy, so unauthorized access is blocked even if the port is accidentally exposed.
 
 ## Quick start
 
