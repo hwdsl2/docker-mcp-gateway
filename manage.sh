@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# https://github.com/hwdsl2/docker-mcp-gateway
+# https://github.com/hwdsl2/tooluplink
 #
 # Copyright (C) 2026 Lin Song <linsongui@gmail.com>
 #
@@ -23,8 +23,8 @@ show_usage() {
   fi
   cat 1>&2 <<'EOF'
 
-MCP Gateway Docker - Server Management
-https://github.com/hwdsl2/docker-mcp-gateway
+ToolUplink - Server Management
+https://github.com/hwdsl2/tooluplink
 
 Usage: docker exec <container> mcp_manage [options]
 
@@ -255,7 +255,7 @@ do_show_key() {
     return
   fi
   echo "==========================================================="
-  echo "MCP Gateway API key"
+  echo "ToolUplink API key"
   echo "==========================================================="
   echo "${MCP_API_KEY}"
   echo "==========================================================="
