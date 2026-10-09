@@ -1,10 +1,14 @@
 [English](README.md) | [简体中文](README-zh.md) | [繁體中文](README-zh-Hant.md) | [Русский](README-ru.md)
 
-# MCP Gateway на Docker
+# ToolUplink
 
-[![Статус сборки](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-mcp-gateway/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![Лицензия: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
+**MCP-шлюз с открытым исходным кодом для самостоятельного размещения.**
 
-Docker-образ для запуска самостоятельно размещённого шлюза [MCP](https://modelcontextprotocol.io/) (Model Context Protocol), обеспечивающего аутентифицированный доступ к нескольким MCP-серверам инструментов через единую конечную точку. Основан на [MCPHub](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy. Разработан для простоты и безопасности по умолчанию.
+[![Статус сборки](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![Лицензия: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
+
+Предоставьте AI-клиентам аутентифицированный доступ к нескольким серверам инструментов [MCP](https://modelcontextprotocol.io/) через ToolUplink. Шлюз работает на базе [MCP Hub (MCPHub)](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy и поддерживает Streamable HTTP и SSE, маршрутизацию серверов и панель управления вашим самостоятельно размещённым шлюзом инструментов.
+
+Ранее проект назывался `docker-mcp-gateway`. Docker-образ остаётся `hwdsl2/mcp-gateway`.
 
 **Возможности:**
 
@@ -15,8 +19,8 @@ Docker-образ для запуска самостоятельно разме�
 - **Встроенные MCP-серверы:** filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking
 - **Панель управления:** веб-интерфейс на `/` для мониторинга состояния MCP-серверов
 - **Настройка через env-файл:** простой файл `mcp.env`; без редактирования JSON
-- **Интеграция с LiteLLM:** подключите [LiteLLM](https://github.com/hwdsl2/docker-litellm), чтобы предоставить совместимым LLM доступ к инструментам MCP.
-- **Автоматическая сборка:** образы автоматически собираются и публикуются через [GitHub Actions](https://github.com/hwdsl2/docker-mcp-gateway/actions).
+- **Интеграция с GatewayCrate:** подключите [GatewayCrate](https://github.com/hwdsl2/gatewaycrate), чтобы предоставить совместимым LLM доступ к инструментам MCP.
+- **Автоматическая сборка:** образы автоматически собираются и публикуются через [GitHub Actions](https://github.com/hwdsl2/tooluplink/actions).
 
 Также доступен в составе [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md), который развёртывает полный AI-стек на собственном сервере одной командой.
 
@@ -24,11 +28,11 @@ Docker-образ для запуска самостоятельно разме�
 
 **Также доступно:**
 
-- Связанные AI-сервисы: [ScribeCrate](https://github.com/hwdsl2/scribecrate/blob/main/README-ru.md), [SpeakCrate](https://github.com/hwdsl2/speakcrate/blob/main/README-ru.md), [Embeddings](https://github.com/hwdsl2/docker-embeddings/blob/main/README-ru.md), [LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-ru.md), [Ollama](https://github.com/hwdsl2/docker-ollama/blob/main/README-ru.md), [ParseCrate](https://github.com/hwdsl2/parsecrate/blob/main/README-ru.md)
+- Связанные AI-сервисы: [ScribeCrate](https://github.com/hwdsl2/scribecrate/blob/main/README-ru.md), [SpeakCrate](https://github.com/hwdsl2/speakcrate/blob/main/README-ru.md), [EmbedCrate](https://github.com/hwdsl2/embedcrate/blob/main/README-ru.md), [GatewayCrate](https://github.com/hwdsl2/gatewaycrate/blob/main/README-ru.md), [InferCrate](https://github.com/hwdsl2/infercrate/blob/main/README-ru.md), [ParseCrate](https://github.com/hwdsl2/parsecrate/blob/main/README-ru.md)
 
 ## Быстрый старт
 
-**Шаг 1.** Запустите MCP Gateway:
+**Шаг 1.** Запустите ToolUplink:
 
 ```bash
 docker run \
@@ -54,7 +58,7 @@ docker logs mcp
 uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
-API-ключ отображается в рамке с надписью **MCP Gateway API key**. Чтобы отобразить его снова в любое время:
+API-ключ отображается в рамке с надписью **ToolUplink API key**. Чтобы отобразить его снова в любое время:
 
 ```bash
 docker exec mcp mcp_manage --showkey
@@ -371,11 +375,11 @@ volumes:
 
 ## Использование обратного прокси
 
-Для развёртывания с выходом в интернет разместите обратный прокси перед MCP Gateway для обработки HTTPS-терминации. Сервер работает без HTTPS в локальной или доверенной сети, но HTTPS рекомендуется при открытом доступе к API-эндпоинту из интернета.
+Для развёртывания с выходом в интернет разместите обратный прокси перед ToolUplink для обработки HTTPS-терминации. Сервер работает без HTTPS в локальной или доверенной сети, но HTTPS рекомендуется при открытом доступе к API-эндпоинту из интернета.
 
-Используйте один из следующих адресов для доступа к контейнеру MCP Gateway из обратного прокси:
+Используйте один из следующих адресов для доступа к контейнеру ToolUplink из обратного прокси:
 
-- **`mcp:3000`** — если ваш обратный прокси работает как контейнер в **той же Docker-сети**, что и MCP Gateway (например, определён в том же `docker-compose.yml`).
+- **`mcp:3000`** — если ваш обратный прокси работает как контейнер в **той же Docker-сети**, что и ToolUplink (например, определён в том же `docker-compose.yml`).
 - **`127.0.0.1:3000`** — если ваш обратный прокси работает **на хосте** и порт `3000` опубликован (по умолчанию `docker-compose.yml` публикует его).
 
 **Примечание:** Заголовок `Authorization: Bearer` автоматически передаётся через обратные прокси — специальная настройка не требуется.
@@ -441,11 +445,11 @@ docker rm -f mcp
 
 ## Использование с другими AI-сервисами
 
-MCP Gateway можно использовать как MCP-шлюз для инструментов в более широком self-hosted AI-стеке.
+ToolUplink можно использовать как MCP-шлюз для инструментов в более широком self-hosted AI-стеке.
 
-Готовые полные и облегчённые стеки Docker Compose, примеры ручного запуска через `docker run`, а также примеры голосовых, RAG- и MCP-конвейеров с SpeakCrate, Embeddings, LiteLLM, Ollama, ParseCrate и MCP Gateway см. в [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md).
+Готовые полные и облегчённые стеки Docker Compose, примеры ручного запуска через `docker run`, а также примеры голосовых, RAG- и MCP-конвейеров с SpeakCrate, EmbedCrate, GatewayCrate, InferCrate, ParseCrate и ToolUplink см. в [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md).
 
-**Подключите MCP Gateway к LiteLLM:**
+**Подключите ToolUplink к GatewayCrate:**
 
 ```yaml
 # В конфигурации LiteLLM добавьте MCP-шлюз как источник инструментов:
