@@ -6,9 +6,9 @@
 
 [![Статус сборки](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![Лицензия: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-Предоставьте AI-клиентам аутентифицированный доступ к нескольким серверам инструментов [MCP](https://modelcontextprotocol.io/) через ToolUplink. Шлюз работает на базе [MCP Hub (MCPHub)](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy и поддерживает Streamable HTTP и SSE, маршрутизацию серверов и панель управления вашим самостоятельно размещённым шлюзом инструментов.
+Предоставьте AI-клиентам аутентифицированный доступ к нескольким серверам инструментов [MCP](https://modelcontextprotocol.io/) через ToolUplink. Шлюз работает на базе [MCPHub](https://github.com/samanhappy/mcphub) и прокси аутентификации Caddy и поддерживает Streamable HTTP и SSE, маршрутизацию серверов и панель управления вашим самостоятельно размещённым шлюзом инструментов.
 
-Ранее проект назывался `docker-mcp-gateway`. Docker-образ остаётся `hwdsl2/mcp-gateway`.
+> Ранее проект назывался `docker-mcp-gateway`. Его поддерживает [hwdsl2](https://github.com/hwdsl2). Docker-образ остаётся `hwdsl2/mcp-gateway`.
 
 **Возможности:**
 

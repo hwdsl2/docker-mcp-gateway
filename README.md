@@ -6,9 +6,9 @@
 
 [![Build Status](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![License: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-Give AI clients authenticated access to multiple [MCP](https://modelcontextprotocol.io/) tool servers through ToolUplink. Powered by [MCP Hub (MCPHub)](https://github.com/samanhappy/mcphub) and a Caddy authentication proxy, it provides Streamable HTTP and SSE access, server routing, and a dashboard for your self-hosted tool gateway.
+Give AI clients authenticated access to multiple [MCP](https://modelcontextprotocol.io/) tool servers through ToolUplink. Powered by [MCPHub](https://github.com/samanhappy/mcphub) and a Caddy authentication proxy, it provides Streamable HTTP and SSE access, server routing, and a dashboard for your self-hosted tool gateway.
 
-Previously known as `docker-mcp-gateway`. The Docker image remains `hwdsl2/mcp-gateway`.
+> Previously known as `docker-mcp-gateway`, maintained by [hwdsl2](https://github.com/hwdsl2). The Docker image remains `hwdsl2/mcp-gateway`.
 
 **Features:**
 

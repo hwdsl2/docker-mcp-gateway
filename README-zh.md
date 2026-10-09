@@ -6,9 +6,9 @@
 
 [![构建状态](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![授权协议: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-通过 ToolUplink，为 AI 客户端提供经过身份验证的多个 [MCP](https://modelcontextprotocol.io/) 工具服务器访问。基于 [MCP Hub (MCPHub)](https://github.com/samanhappy/mcphub) 和 Caddy 身份验证代理，提供 Streamable HTTP 和 SSE 访问、服务器路由，以及自托管工具网关的仪表板。
+通过 ToolUplink，为 AI 客户端提供经过身份验证的多个 [MCP](https://modelcontextprotocol.io/) 工具服务器访问。基于 [MCPHub](https://github.com/samanhappy/mcphub) 和 Caddy 身份验证代理，提供 Streamable HTTP 和 SSE 访问、服务器路由，以及自托管工具网关的仪表板。
 
-原名为 `docker-mcp-gateway`。Docker 镜像仍为 `hwdsl2/mcp-gateway`。
+> 本项目原名为 `docker-mcp-gateway`，由 [hwdsl2](https://github.com/hwdsl2) 维护。Docker 镜像仍为 `hwdsl2/mcp-gateway`。
 
 **功能特性：**
 

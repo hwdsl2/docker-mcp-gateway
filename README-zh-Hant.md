@@ -6,9 +6,9 @@
 
 [![建置狀態](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/tooluplink/actions/workflows/main.yml) &nbsp;[![Docker Pulls](https://raw.githubusercontent.com/hwdsl2/badges/main/img/docker-pulls-mcp-gateway.svg)](https://hub.docker.com/r/hwdsl2/mcp-gateway) &nbsp;[![授權條款: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
 
-透過 ToolUplink，為 AI 用戶端提供經過驗證的多個 [MCP](https://modelcontextprotocol.io/) 工具伺服器存取。基於 [MCP Hub (MCPHub)](https://github.com/samanhappy/mcphub) 和 Caddy 驗證代理，提供 Streamable HTTP 和 SSE 存取、伺服器路由，以及自託管工具閘道的儀表板。
+透過 ToolUplink，為 AI 用戶端提供經過驗證的多個 [MCP](https://modelcontextprotocol.io/) 工具伺服器存取。基於 [MCPHub](https://github.com/samanhappy/mcphub) 和 Caddy 驗證代理，提供 Streamable HTTP 和 SSE 存取、伺服器路由，以及自託管工具閘道的儀表板。
 
-原名為 `docker-mcp-gateway`。Docker 映像仍為 `hwdsl2/mcp-gateway`。
+> 本專案原名為 `docker-mcp-gateway`，由 [hwdsl2](https://github.com/hwdsl2) 維護。Docker 映像仍為 `hwdsl2/mcp-gateway`。
 
 **功能特色：**
 
