@@ -51,7 +51,7 @@ docker run \
 docker logs mcp
 
 # 或取得金鑰以在腳本中使用
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 API 金鑰顯示在標有 **MCP Gateway API key** 的方框中。隨時可以透過以下指令重新顯示：
@@ -63,11 +63,11 @@ docker exec mcp mcp_manage --showkey
 **第三步。** 透過 API 測試：
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 
 # 測試 MCP 端點（預設啟用 fetch 伺服器）
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 
 # 檢查閘道健康狀態（無需驗證）
 curl http://localhost:3000/health
@@ -236,7 +236,7 @@ docker exec mcp mcp_manage --showkey
 **取得 API 金鑰**（機器可讀，用於腳本）：
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **在執行時新增或移除伺服器：**
@@ -256,21 +256,21 @@ docker restart mcp
 所有 API 請求均需 Bearer Token。首先取得 API 金鑰：
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **MCP 端點（所有已啟用伺服器）：**
 
 ```bash
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **MCP 端點（指定伺服器）：**
 
 ```bash
 curl http://localhost:3000/mcp/fetch \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **儀表板**（Web UI）：
@@ -453,7 +453,7 @@ mcp_servers:
   - url: http://mcp:3000/mcp
     transport: http
     headers:
-      Authorization: "Bearer <mcp_api_key>"
+      Authorization: "Bearer <uplink_api_key>"
 ```
 
 ## 使用計數

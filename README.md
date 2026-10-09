@@ -51,7 +51,7 @@ On first start, an API key is auto-generated and displayed in the container logs
 docker logs mcp
 
 # Or retrieve it for use in scripts
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 The API key is displayed in a box labeled **MCP Gateway API key**. To display it again at any time:
@@ -63,11 +63,11 @@ docker exec mcp mcp_manage --showkey
 **Step 3.** Test with the API:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 
 # Test the MCP endpoint (fetch server is enabled by default)
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 
 # Check gateway health (no auth required)
 curl http://localhost:3000/health
@@ -236,7 +236,7 @@ docker exec mcp mcp_manage --showkey
 **Get the API key** (machine-readable, for use in scripts):
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **Add or remove servers at runtime:**
@@ -256,21 +256,21 @@ docker restart mcp
 All API requests require a Bearer token. Retrieve the API key first:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **MCP endpoint (all enabled servers):**
 
 ```bash
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **MCP endpoint (specific server):**
 
 ```bash
 curl http://localhost:3000/mcp/fetch \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **Dashboard** (web UI):
@@ -453,7 +453,7 @@ mcp_servers:
   - url: http://mcp:3000/mcp
     transport: http
     headers:
-      Authorization: "Bearer <mcp_api_key>"
+      Authorization: "Bearer <uplink_api_key>"
 ```
 
 ## Usage counts

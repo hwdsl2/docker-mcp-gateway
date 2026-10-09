@@ -51,7 +51,7 @@ docker run \
 docker logs mcp
 
 # Или получение ключа для использования в скриптах
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 API-ключ отображается в рамке с надписью **MCP Gateway API key**. Чтобы отобразить его снова в любое время:
@@ -63,11 +63,11 @@ docker exec mcp mcp_manage --showkey
 **Шаг 3.** Протестируйте API:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 
 # Проверка конечной точки MCP (по умолчанию включён сервер fetch)
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 
 # Проверка работоспособности шлюза (без аутентификации)
 curl http://localhost:3000/health
@@ -236,7 +236,7 @@ docker exec mcp mcp_manage --showkey
 **Получить API-ключ** (машиночитаемый формат, для скриптов):
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **Добавление или удаление серверов во время работы:**
@@ -256,21 +256,21 @@ docker restart mcp
 Все API-запросы требуют Bearer Token. Сначала получите API-ключ:
 
 ```bash
-MCP_KEY=$(docker exec mcp mcp_manage --getkey)
+uplink_api_key="$(docker exec mcp mcp_manage --getkey)"
 ```
 
 **Конечная точка MCP (все включённые серверы):**
 
 ```bash
 curl http://localhost:3000/mcp \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **Конечная точка MCP (конкретный сервер):**
 
 ```bash
 curl http://localhost:3000/mcp/fetch \
-  -H "Authorization: Bearer $MCP_KEY"
+  -H "Authorization: Bearer $uplink_api_key"
 ```
 
 **Панель управления** (веб-интерфейс):
@@ -453,7 +453,7 @@ mcp_servers:
   - url: http://mcp:3000/mcp
     transport: http
     headers:
-      Authorization: "Bearer <mcp_api_key>"
+      Authorization: "Bearer <uplink_api_key>"
 ```
 
 ## Счётчики использования
