@@ -19,7 +19,7 @@
 - **Встроенные MCP-серверы:** filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking
 - **Панель управления:** веб-интерфейс на `/` для мониторинга состояния MCP-серверов
 - **Настройка через env-файл:** простой файл `mcp.env`; без редактирования JSON
-- **Интеграция с GatewayCrate:** подключите [GatewayCrate](https://github.com/hwdsl2/gatewaycrate), чтобы предоставить совместимым LLM доступ к инструментам MCP.
+- **Интеграция с LiteLLM:** подключите LiteLLM, включая [GatewayCrate](https://github.com/hwdsl2/gatewaycrate), чтобы предоставить совместимым LLM доступ к инструментам MCP.
 - **Автоматическая сборка:** образы автоматически собираются и публикуются через [GitHub Actions](https://github.com/hwdsl2/tooluplink/actions).
 
 Также доступен в составе [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md), который развёртывает полный AI-стек на собственном сервере одной командой.
@@ -450,6 +450,8 @@ ToolUplink можно использовать как MCP-шлюз для инс
 Готовые полные и облегчённые стеки Docker Compose, примеры ручного запуска через `docker run`, а также примеры голосовых, RAG- и MCP-конвейеров с SpeakCrate, EmbedCrate, GatewayCrate, InferCrate, ParseCrate и ToolUplink см. в [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-ru.md).
 
 **Подключите ToolUplink к GatewayCrate:**
+
+Для GatewayCrate или другого совместимого развёртывания LiteLLM добавьте ToolUplink как источник MCP-инструментов:
 
 ```yaml
 # В конфигурации LiteLLM добавьте MCP-шлюз как источник инструментов:

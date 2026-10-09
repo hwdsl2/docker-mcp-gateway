@@ -19,7 +19,7 @@ Give AI clients authenticated access to multiple [MCP](https://modelcontextproto
 - **Built-in MCP servers:** filesystem, fetch, GitHub, Brave Search, Git, PostgreSQL, memory, sequential-thinking.
 - **Dashboard:** web UI at `/` for monitoring MCP server status.
 - **Env-file configuration:** simple `mcp.env` file; no JSON editing.
-- **GatewayCrate integration:** connect [GatewayCrate](https://github.com/hwdsl2/gatewaycrate) to give compatible LLMs access to MCP tools.
+- **LiteLLM integration:** connect LiteLLM, including [GatewayCrate](https://github.com/hwdsl2/gatewaycrate), to give compatible LLMs access to MCP tools.
 - **Automated builds:** images are automatically built and published through [GitHub Actions](https://github.com/hwdsl2/tooluplink/actions).
 
 Also available as part of the [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack), which deploys a complete self-hosted AI stack with a single command.
@@ -450,6 +450,8 @@ ToolUplink can be used as the MCP tool gateway in a broader self-hosted AI setup
 For full and lightweight Docker Compose stacks, manual `docker run` examples, and voice/RAG/MCP pipeline examples with SpeakCrate, EmbedCrate, GatewayCrate, InferCrate, ParseCrate, and ToolUplink, see [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack).
 
 **Connect ToolUplink to GatewayCrate:**
+
+For GatewayCrate or another compatible LiteLLM deployment, add ToolUplink as an MCP tool source:
 
 ```yaml
 # In your LiteLLM config, add the MCP gateway as a tool source:

@@ -19,7 +19,7 @@
 - **內建 MCP 伺服器：** filesystem、fetch、GitHub、Brave Search、Git、PostgreSQL、memory、sequential-thinking
 - **儀表板：** 位於 `/` 的 Web UI，用於監控 MCP 伺服器狀態
 - **環境檔案設定：** 簡單的 `mcp.env` 檔案；無需編輯 JSON
-- **GatewayCrate 整合：** 與 [GatewayCrate](https://github.com/hwdsl2/gatewaycrate) 配合，為相容的 LLM 提供 MCP 工具存取。
+- **LiteLLM 整合：** 與 LiteLLM（包括 [GatewayCrate](https://github.com/hwdsl2/gatewaycrate)）配合，為相容的 LLM 提供 MCP 工具存取。
 - **自動建置：** 透過 [GitHub Actions](https://github.com/hwdsl2/tooluplink/actions) 自動建置和發布
 
 也可作為 [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh-Hant.md) 的一部分使用，一條命令即可部署完整的自託管 AI 技術堆疊。
@@ -450,6 +450,8 @@ ToolUplink 可作為更廣泛的自託管 AI 設定中的 MCP 工具閘道。
 如需完整和輕量級 Docker Compose 技術堆疊、手動 `docker run` 範例，以及結合 SpeakCrate、EmbedCrate、GatewayCrate、InferCrate、ParseCrate 和 ToolUplink 的語音/RAG/MCP 流水線範例，請參閱 [Self-Hosted AI Stack](https://github.com/hwdsl2/self-hosted-ai-stack/blob/main/README-zh-Hant.md)。
 
 **將 ToolUplink 連接到 GatewayCrate：**
+
+對於 GatewayCrate 或其他相容的 LiteLLM 部署，請將 ToolUplink 新增為 MCP 工具來源：
 
 ```yaml
 # 在 LiteLLM 設定中，將 MCP 閘道新增為工具來源：
